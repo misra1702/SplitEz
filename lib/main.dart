@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bill1/globals.dart';
 
 void main() {
   runApp(MyApp());
@@ -44,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 5,
           ),
         ],
+        elevation: 30,
       ),
       body: MyHome(),
       // This trailing comma makes auto-formatting nicer for build methods.
@@ -63,10 +65,18 @@ class _MyHomeState extends State<MyHome> {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            'You have pushed the button this many times:',
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+            child: Text(
+              "Add new contact",
+              style: Globals.st,
+            ),
+            onPressed: () {},
+            style: Globals.btnst,
           ),
         ],
       ),
