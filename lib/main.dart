@@ -30,6 +30,32 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 3,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: Colors.teal,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                "Drawer",
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -61,6 +87,14 @@ class MyHome extends StatefulWidget {
 }
 
 class _MyHomeState extends State<MyHome> {
+  List<String> contactNames = [
+    "John",
+    "Mary",
+    "Donald",
+    "Joe",
+    "Ramesh",
+    "Bunty",
+  ];
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -75,8 +109,44 @@ class _MyHomeState extends State<MyHome> {
               "Add new contact",
               style: Globals.st,
             ),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                contactNames.add("Mohan");
+              });
+            },
             style: Globals.btnst,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: ListView.separated(
+              itemCount: contactNames.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  child: ListTile(
+                    key: UniqueKey(),
+                    title: Text(
+                      "${contactNames[index]}",
+                      style: Globals.st,
+                    ),
+                    leading: Icon(Icons.contact_mail),
+                    subtitle: Text("$index"),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {
+                          contactNames.removeAt(index);
+                        });
+                      },
+                    ),
+                  ),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider();
+              },
+            ),
           ),
         ],
       ),
