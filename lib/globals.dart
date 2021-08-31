@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:math' as math;
 
 class Globals {
   static TextStyle st = GoogleFonts.teko(
@@ -15,5 +16,11 @@ class Globals {
         bottomLeft: Radius.circular(5),
       ),
     ),
+  );
+  static ButtonStyle btnstGrpList = TextButton.styleFrom(
+    shape: CircleBorder(),
+    backgroundColor: Colors.teal,
+    alignment: Alignment.center,
+    padding: EdgeInsets.all(10),
   );
 }
