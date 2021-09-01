@@ -1,11 +1,11 @@
+import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/globals.dart';
 import 'package:fluttercontactpicker/fluttercontactpicker.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:hive/hive.dart';
 
 class GrpCreate extends StatefulWidget {
   GrpCreate({Key? key}) : super(key: key);
-
   @override
   _GrpCreateState createState() => _GrpCreateState();
 }
@@ -13,6 +13,11 @@ class GrpCreate extends StatefulWidget {
 class _GrpCreateState extends State<GrpCreate> {
   @override
   Widget build(BuildContext context) {
+    final String grpName = ModalRoute.of(context)?.settings.arguments as String;
+    var box = Hive.box<Group>('grpList');
+    setState(() {
+      box.put(grpName, Group(grpName: grpName));
+    });
     return Scaffold(
       drawer: Drawer(
         child: Column(
@@ -47,19 +52,19 @@ class _GrpCreateState extends State<GrpCreate> {
             Navigator.of(context).pop();
           },
         ),
-        title: Text("Bill Splitter"),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.menu),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-        ],
+        title: Text(grpName),
         elevation: 30,
       ),
       body: GrpCreateBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: Icon(
+          Icons.check,
+          color: Colors.white,
+        ),
+      ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
@@ -74,7 +79,6 @@ class GrpCreateBody extends StatefulWidget {
 
 class _GrpCreateBodyState extends State<GrpCreateBody> {
   List<Contact> contactNames = [];
-
   addContact() async {
     Contact? a;
     try {
@@ -153,3 +157,5 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
     );
   }
 }
+
+void addGroup(var box, String grpName) {}

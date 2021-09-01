@@ -1,9 +1,15 @@
+import 'package:bill1/models/group.dart';
 import 'package:bill1/screens/grpList.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/screens/grpCreate.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(GroupAdapter());
+  await Hive.openBox<Group>('grplist');
   runApp(MyApp());
 }
 

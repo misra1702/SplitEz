@@ -15,21 +15,4 @@ class Group extends HiveObject {
   List<List<Map<String, double>>> expense = [];
 
   Group({required this.grpName});
-
-  void addContact(Contact a) {
-    grpContacts.add(a);
-  }
-
-  void removeContact(int index) {
-    grpContacts.removeAt(index);
-  }
-
-  void addExpense(List<Map<String, double>> a) {
-    expense.add(a);
-  }
-
-  void removeExpense(int index) {
-    expense.removeAt(index);
-    
-  }
 }
