@@ -14,7 +14,7 @@ class _GrpCreateState extends State<GrpCreate> {
   @override
   Widget build(BuildContext context) {
     final String grpName = ModalRoute.of(context)?.settings.arguments as String;
-    var box = Hive.box<Group>('grpList');
+    var box = Hive.box<Group>('GrpDb');
     setState(() {
       box.put(grpName, Group(grpName: grpName));
     });
@@ -49,7 +49,10 @@ class _GrpCreateState extends State<GrpCreate> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.popUntil(
+              context,
+              ModalRoute.withName('/grpList'),
+            );
           },
         ),
         title: Text(grpName),
@@ -58,7 +61,10 @@ class _GrpCreateState extends State<GrpCreate> {
       body: GrpCreateBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pop();
+          Navigator.popUntil(
+            context,
+            ModalRoute.withName('/grpList'),
+          );
         },
         child: Icon(
           Icons.check,

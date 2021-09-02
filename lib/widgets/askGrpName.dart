@@ -4,14 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 
 class AskGrpName extends StatefulWidget {
-  const AskGrpName({Key? key}) : super(key: key);
+  const AskGrpName({Key? key, required this.addGroup}) : super(key: key);
 
+  final void Function(Group a) addGroup;
   @override
   _AskGrpNameState createState() => _AskGrpNameState();
 }
 
 class _AskGrpNameState extends State<AskGrpName> {
-  TextEditingController _grpName = TextEditingController();
+  final TextEditingController _grpName = TextEditingController();
   String grpName = "";
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class _AskGrpNameState extends State<AskGrpName> {
       elevation: 10,
       title: Center(
         child: Text(
-          "Add Group Name",
+          "Group Name",
           style: GoogleFonts.kreon(
             color: Colors.white,
             fontSize: 30,
@@ -32,6 +33,7 @@ class _AskGrpNameState extends State<AskGrpName> {
           this.grpName = value;
         },
         controller: _grpName,
+        cursorColor: Colors.white,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -60,7 +62,7 @@ class _AskGrpNameState extends State<AskGrpName> {
         Center(
           child: ElevatedButton(
             onPressed: () {
-              var box = Hive.box<Group>('grpList');
+              var box = Hive.box<Group>('GrpDb');
               this.grpName = this.grpName.trim();
               if (this.grpName == "") {
                 SnackBar e = SnackBar(
@@ -75,6 +77,7 @@ class _AskGrpNameState extends State<AskGrpName> {
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
               }
+              this.widget.addGroup(Group(grpName: this.grpName));
               Navigator.of(context)
                   .pushNamed('/grpCreate', arguments: this.grpName);
             },

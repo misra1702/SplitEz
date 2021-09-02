@@ -1,4 +1,6 @@
 import 'package:bill1/models/group.dart';
+import 'package:bill1/screens/askExp.dart';
+import 'package:bill1/screens/expList.dart';
 import 'package:bill1/screens/grpList.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/screens/grpCreate.dart';
@@ -9,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(GroupAdapter());
-  await Hive.openBox<Group>('grplist');
+  await Hive.openBox<Group>('GrpDb');
   runApp(MyApp());
 }
 
@@ -25,6 +27,12 @@ class MyApp extends StatelessWidget {
         },
         '/grpList': (context) {
           return GrpList();
+        },
+        '/expList': (context) {
+          return ExpList();
+        },
+        '/askExp': (context) {
+          return AskExp();
         }
       },
       title: 'Bill App',

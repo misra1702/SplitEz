@@ -1,5 +1,6 @@
 import 'package:bill1/globals.dart';
 import 'package:bill1/models/group.dart';
+import 'package:bill1/screens/expList.dart';
 import 'package:bill1/widgets/askGrpName.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,6 +27,13 @@ class _GrpListState extends State<GrpList> {
     }
   }
 
+  void addGroup(Group a) {
+    var box = Hive.box<Group>('GrpDb');
+    setState(() {
+      box.put(a.grpName, a);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -38,11 +46,7 @@ class _GrpListState extends State<GrpList> {
       appBar: AppBar(
         title: Text(
           "Bill Splitter",
-          style: GoogleFonts.kreon(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Globals.appBarTextStyle,
         ),
         centerTitle: true,
       ),
@@ -51,7 +55,9 @@ class _GrpListState extends State<GrpList> {
           showDialog(
               context: context,
               builder: (context) {
-                return AskGrpName();
+                return AskGrpName(
+                  addGroup: this.addGroup,
+                );
               });
         },
         child: Icon(
@@ -71,7 +77,14 @@ class GrpListBody extends StatefulWidget {
 }
 
 class _GrpListBodyState extends State<GrpListBody> {
-  var box = Hive.box<Group>('grplist');
+  var box = Hive.box<Group>('GrpDb');
+
+  void deleteGrp(Group a) {
+    setState(() {
+      box.delete(a.grpName);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (box.isEmpty) {
@@ -99,6 +112,7 @@ class _GrpListBodyState extends State<GrpListBody> {
       itemBuilder: (BuildContext context, int index) {
         return MakeCards(
           grp: box.getAt(index) as Group,
+          deleteGrp: this.deleteGrp,
         );
       },
       separatorBuilder: (BuildContext context, int index) {
@@ -109,8 +123,10 @@ class _GrpListBodyState extends State<GrpListBody> {
 }
 
 class MakeCards extends StatefulWidget {
-  const MakeCards({Key? key, required this.grp}) : super(key: key);
+  const MakeCards({Key? key, required this.grp, required this.deleteGrp})
+      : super(key: key);
   final Group grp;
+  final void Function(Group a) deleteGrp;
   @override
   _MakeCardsState createState() => _MakeCardsState();
 }
@@ -118,16 +134,20 @@ class MakeCards extends StatefulWidget {
 class _MakeCardsState extends State<MakeCards> {
   @override
   Widget build(BuildContext context) {
-    var box = Hive.box<Group>('grpList');
     return Card(
+      key: ValueKey(this.widget.grp),
       elevation: 10,
       margin: EdgeInsets.all(10),
       color: Colors.teal,
       child: ListTile(
         leading: CircleAvatar(),
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed('/expList', arguments: this.widget.grp);
+        },
         trailing: IconButton(
           onPressed: () {
-              box.delete(widget.grp.grpName);
+            this.widget.deleteGrp(widget.grp);
           },
           icon: Icon(
             Icons.delete,

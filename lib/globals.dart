@@ -23,4 +23,9 @@ class Globals {
     alignment: Alignment.center,
     padding: EdgeInsets.all(10),
   );
+  static TextStyle appBarTextStyle = GoogleFonts.kreon(
+    color: Colors.white,
+    fontSize: 30,
+    fontWeight: FontWeight.bold,
+  );
 }
