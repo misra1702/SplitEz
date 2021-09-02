@@ -1,7 +1,8 @@
 import 'package:bill1/globals.dart';
+import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 class ExpList extends StatefulWidget {
   const ExpList({
@@ -16,6 +17,9 @@ class _ExpListState extends State<ExpList> {
   @override
   Widget build(BuildContext context) {
     final Group grp = ModalRoute.of(context)?.settings.arguments as Group;
+    context.read<Glist>().openGrp(grp);
+    Group cGrp = context.watch<Glist>().cGrp;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -25,14 +29,20 @@ class _ExpListState extends State<ExpList> {
           },
         ),
         title: Text(
-          grp.grpName,
+          cGrp.grpName,
           style: Globals.appBarTextStyle,
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/grpCreate', arguments: grp);
+            },
+          ),
+        ],
       ),
-      body: ExpListBody(
-        grp: grp,
-      ),
+      body: ExpListBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed('/askExp');
@@ -46,8 +56,7 @@ class _ExpListState extends State<ExpList> {
 }
 
 class ExpListBody extends StatefulWidget {
-  const ExpListBody({Key? key, required this.grp}) : super(key: key);
-  final Group grp;
+  const ExpListBody({Key? key}) : super(key: key);
   @override
   _ExpListBodyState createState() => _ExpListBodyState();
 }
@@ -55,15 +64,26 @@ class ExpListBody extends StatefulWidget {
 class _ExpListBodyState extends State<ExpListBody> {
   @override
   Widget build(BuildContext context) {
-    var box = Hive.box<Group>('GrpDb');
-    if (widget.grp.expense.isEmpty) {
+    var cGrp = context.watch<Glist>().cGrp;
+    if (cGrp.expense.isEmpty) {
       return Center(
         child: Text("Click + to add new expense."),
       );
     }
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [],
+      children: [
+        Expanded(
+          child: ListView.separated(
+            itemCount: cGrp.expense.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(title: Text(cGrp.expense[index][0].toString()));
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return Divider();
+            },
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,11 +1,13 @@
+import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/globals.dart';
 import 'package:fluttercontactpicker/fluttercontactpicker.dart';
-import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 class GrpCreate extends StatefulWidget {
   GrpCreate({Key? key}) : super(key: key);
+
   @override
   _GrpCreateState createState() => _GrpCreateState();
 }
@@ -13,11 +15,9 @@ class GrpCreate extends StatefulWidget {
 class _GrpCreateState extends State<GrpCreate> {
   @override
   Widget build(BuildContext context) {
-    final String grpName = ModalRoute.of(context)?.settings.arguments as String;
-    var box = Hive.box<Group>('GrpDb');
-    setState(() {
-      box.put(grpName, Group(grpName: grpName));
-    });
+    final Group grp = ModalRoute.of(context)?.settings.arguments as Group;
+    context.read<Glist>().openGrp(grp);
+    Group cGrp = context.watch<Glist>().cGrp;
     return Scaffold(
       drawer: Drawer(
         child: Column(
@@ -55,12 +55,13 @@ class _GrpCreateState extends State<GrpCreate> {
             );
           },
         ),
-        title: Text(grpName),
+        title: Text(cGrp.grpName),
         elevation: 30,
       ),
       body: GrpCreateBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          context.read<Glist>().addGrp(cGrp);
           Navigator.popUntil(
             context,
             ModalRoute.withName('/grpList'),
@@ -84,22 +85,36 @@ class GrpCreateBody extends StatefulWidget {
 }
 
 class _GrpCreateBodyState extends State<GrpCreateBody> {
-  List<Contact> contactNames = [];
-  addContact() async {
-    Contact? a;
+  late Group cGrp;
+
+  chooseContact() async {
+    FullContact? a;
     try {
-      a = await FlutterContactPicker.pickPhoneContact();
+      a = await FlutterContactPicker.pickFullContact();
     } catch (e) {
       print(e);
     }
-    setState(() {
-      if (a == null || contactNames.contains(a)) return;
-      contactNames.add(a);
-    });
+    if (a == null) {
+      return;
+    } else {
+      String name = (a.name?.firstName ?? "") +
+          (a.name?.middleName ?? "") +
+          (a.name?.lastName ?? " ");
+      String? phoneNum = a.phones[0].number;
+      Contacts nCon = Contacts(name: name, phone: phoneNum);
+      for (int i = 0; i < cGrp.grpContacts.length; i++) {
+        if (cGrp.grpContacts[i].name == name) {
+          return;
+        }
+      }
+      context.read<Glist>().addContact(nCon);
+      print("Done adding to cGrp");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    cGrp = context.watch<Glist>().cGrp;
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -112,7 +127,7 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
               "Add new contact",
               style: Globals.st,
             ),
-            onPressed: addContact,
+            onPressed: chooseContact,
             style: Globals.btnst,
           ),
           SizedBox(
@@ -120,20 +135,21 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
           ),
           Expanded(
             child: ListView.separated(
-              itemCount: contactNames.length,
+              itemCount: cGrp.grpContacts.length,
               itemBuilder: (BuildContext context, int index) {
+                Contacts con = cGrp.grpContacts[index];
                 return Card(
                   child: ListTile(
                     key: UniqueKey(),
                     title: Text(
-                      "${contactNames[index].fullName}",
+                      "${con.name}",
                       style: Globals.st,
                     ),
-                    subtitle: Text("$index"),
+                    subtitle: Text("${con.phoneNum}"),
                     leading: TextButton(
                       onPressed: () {},
                       child: Text(
-                        "${contactNames[index].fullName?[0]}",
+                        "${con.name[0]}",
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -145,9 +161,7 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
-                        setState(() {
-                          contactNames.removeAt(index);
-                        });
+                        context.read<Glist>().deleteContact(con);
                       },
                     ),
                   ),
@@ -163,5 +177,3 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
     );
   }
 }
-
-void addGroup(var box, String grpName) {}

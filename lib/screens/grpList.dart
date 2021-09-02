@@ -1,11 +1,11 @@
 import 'package:bill1/globals.dart';
+import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
-import 'package:bill1/screens/expList.dart';
 import 'package:bill1/widgets/askGrpName.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 class GrpList extends StatefulWidget {
   const GrpList({Key? key}) : super(key: key);
@@ -25,13 +25,6 @@ class _GrpListState extends State<GrpList> {
     if (status.isPermanentlyDenied) {
       openAppSettings();
     }
-  }
-
-  void addGroup(Group a) {
-    var box = Hive.box<Group>('GrpDb');
-    setState(() {
-      box.put(a.grpName, a);
-    });
   }
 
   @override
@@ -55,9 +48,7 @@ class _GrpListState extends State<GrpList> {
           showDialog(
               context: context,
               builder: (context) {
-                return AskGrpName(
-                  addGroup: this.addGroup,
-                );
+                return AskGrpName();
               });
         },
         child: Icon(
@@ -77,91 +68,70 @@ class GrpListBody extends StatefulWidget {
 }
 
 class _GrpListBodyState extends State<GrpListBody> {
-  var box = Hive.box<Group>('GrpDb');
-
-  void deleteGrp(Group a) {
-    setState(() {
-      box.delete(a.grpName);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    var box = context.watch<Glist>().box;
     if (box.isEmpty) {
-      return Align(
-        alignment: Alignment.topCenter,
-        child: Container(
-          child: Text(
-            "Create a new Group!!",
-            style: GoogleFonts.kreon(
-              fontSize: 30,
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "No Groups",
+              style: GoogleFonts.kreon(
+                fontSize: 25,
+              ),
             ),
-          ),
-          padding: EdgeInsets.all(20),
-          margin: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
-            border: Border.all(color: Colors.black),
-          ),
+            Text(
+              "Click + to add new Group",
+              style: GoogleFonts.kreon(
+                fontSize: 20,
+              ),
+            ),
+          ],
         ),
       );
     }
     return ListView.separated(
       itemCount: box.length,
       itemBuilder: (BuildContext context, int index) {
-        return MakeCards(
-          grp: box.getAt(index) as Group,
-          deleteGrp: this.deleteGrp,
+        Group grp = box.getAt(index)!;
+        return Card(
+          key: ValueKey(grp),
+          elevation: 10,
+          margin: EdgeInsets.all(10),
+          color: Colors.teal,
+          child: ListTile(
+            leading: Icon(
+              Icons.list,
+              color: Colors.white,
+            ),
+            onTap: () {
+              Navigator.of(context).pushNamed('/expList', arguments: grp);
+            },
+            trailing: IconButton(
+              onPressed: () {
+                context.read<Glist>().deleteGrp(grp);
+              },
+              icon: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+            title: Text(
+              grp.grpName,
+              style: GoogleFonts.kreon(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+          ),
         );
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider();
       },
-    );
-  }
-}
-
-class MakeCards extends StatefulWidget {
-  const MakeCards({Key? key, required this.grp, required this.deleteGrp})
-      : super(key: key);
-  final Group grp;
-  final void Function(Group a) deleteGrp;
-  @override
-  _MakeCardsState createState() => _MakeCardsState();
-}
-
-class _MakeCardsState extends State<MakeCards> {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      key: ValueKey(this.widget.grp),
-      elevation: 10,
-      margin: EdgeInsets.all(10),
-      color: Colors.teal,
-      child: ListTile(
-        leading: CircleAvatar(),
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed('/expList', arguments: this.widget.grp);
-        },
-        trailing: IconButton(
-          onPressed: () {
-            this.widget.deleteGrp(widget.grp);
-          },
-          icon: Icon(
-            Icons.delete,
-            color: Colors.white,
-          ),
-        ),
-        title: Text(
-          widget.grp.grpName,
-          style: GoogleFonts.kreon(
-            color: Colors.white,
-            fontSize: 24,
-          ),
-        ),
-      ),
     );
   }
 }

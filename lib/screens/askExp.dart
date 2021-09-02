@@ -22,6 +22,25 @@ class _AskExpState extends State<AskExp> {
         title: Text("Add Expense", style: Globals.appBarTextStyle),
         centerTitle: true,
       ),
+      body: ExpensesBody(),
+    );
+  }
+}
+
+class ExpensesBody extends StatefulWidget {
+  const ExpensesBody({Key? key}) : super(key: key);
+
+  @override
+  _ExpensesBodyState createState() => _ExpensesBodyState();
+}
+
+class _ExpensesBodyState extends State<ExpensesBody> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        
+      ],
     );
   }
 }

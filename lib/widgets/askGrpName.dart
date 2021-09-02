@@ -4,9 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 
 class AskGrpName extends StatefulWidget {
-  const AskGrpName({Key? key, required this.addGroup}) : super(key: key);
+  const AskGrpName({Key? key,}) : super(key: key);
 
-  final void Function(Group a) addGroup;
   @override
   _AskGrpNameState createState() => _AskGrpNameState();
 }
@@ -77,9 +76,10 @@ class _AskGrpNameState extends State<AskGrpName> {
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
               }
-              this.widget.addGroup(Group(grpName: this.grpName));
-              Navigator.of(context)
-                  .pushNamed('/grpCreate', arguments: this.grpName);
+              Navigator.of(context).pushNamed(
+                '/grpCreate',
+                arguments: Group(grpName: this.grpName),
+              );
             },
             child: Text(
               "SUBMIT",
