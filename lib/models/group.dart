@@ -32,16 +32,16 @@ class Contacts extends HiveObject {
 @HiveType(typeId: 2)
 class Expenses extends HiveObject {
   @HiveField(0)
-  String? title;
+  String title;
 
   @HiveField(1)
-  double amount = 0.0;
+  String amount = "";
 
   @HiveField(2)
-  Map<Contacts, double> whoPaid = {};
+  Map<Contacts, String> whoPaid = {};
 
   @HiveField(3)
-  Map<Contacts, double> whoBought = {};
+  Map<Contacts, String> whoBought = {};
 
-  Expenses({required this.amount});
+  Expenses({this.amount = "", this.title = ""});
 }

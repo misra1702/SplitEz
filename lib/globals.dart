@@ -27,4 +27,29 @@ class Globals {
     fontSize: 30,
     fontWeight: FontWeight.bold,
   );
+  static TextStyle textFieldLabelStyle = GoogleFonts.kreon(
+    color: Colors.tealAccent,
+  );
+  static TextStyle textFieldStyle = GoogleFonts.kreon(
+    fontSize: 20,
+  );
+  static InputDecoration textFieldDecoration = InputDecoration(
+    labelText: 'Title',
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(20),
+      borderSide: BorderSide(
+        color: Colors.teal,
+        width: 4,
+        style: BorderStyle.solid,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(20),
+      borderSide: BorderSide(
+        color: Colors.black,
+        width: 2,
+        style: BorderStyle.solid,
+      ),
+    ),
+  );
 }

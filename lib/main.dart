@@ -59,12 +59,13 @@ class MyApp extends StatelessWidget {
 class Glist extends ChangeNotifier {
   var box = Hive.box<Group>('GrpDb');
   late Group cGrp;
+  Expenses cExp = Expenses();
 
   void openGrp(Group grp) {
     cGrp = grp;
   }
 
-  void addGrp(Group grp)  {
+  void addGrp(Group grp) {
     box.put(grp.grpName, grp);
     notifyListeners();
   }
@@ -74,7 +75,6 @@ class Glist extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void addContact(Contacts con) {
     cGrp.grpContacts.add(con);
     notifyListeners();
@@ -83,5 +83,13 @@ class Glist extends ChangeNotifier {
   void deleteContact(Contacts con) {
     cGrp.grpContacts.remove(con);
     notifyListeners();
+  }
+
+  void setTitle(String title) {
+    cExp.title = title;
+  }
+
+  void setAmount(String amount) {
+    cExp.amount = amount;
   }
 }
