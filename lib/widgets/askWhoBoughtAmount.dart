@@ -1,3 +1,4 @@
+import 'package:bill1/globals.dart';
 import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
@@ -5,14 +6,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
-class AskAmountPaid extends StatefulWidget {
-  const AskAmountPaid({Key? key, required this.name}) : super(key: key);
+class AskWhoBoughtAmount extends StatefulWidget {
+  const AskWhoBoughtAmount({Key? key, required this.name}) : super(key: key);
   final Contacts name;
   @override
-  _AskAmountPaidState createState() => _AskAmountPaidState();
+  _AskWhoBoughtAmountState createState() => _AskWhoBoughtAmountState();
 }
 
-class _AskAmountPaidState extends State<AskAmountPaid> {
+class _AskWhoBoughtAmountState extends State<AskWhoBoughtAmount> {
   final TextEditingController _grpName = TextEditingController();
   String amount = "";
   @override
@@ -67,14 +68,22 @@ class _AskAmountPaidState extends State<AskAmountPaid> {
               this.amount = this.amount.trim();
               if (this.amount == "") {
                 SnackBar e = SnackBar(
-                  content: Text("Amount cannot be empty"),
+                  content: Text(
+                    "Amount cannot be empty",
+                    style: Globals.askExpenseSt,
+                  ),
+                  duration: Globals.snackbarDuration,
                 );
                 ScaffoldMessenger.of(context).clearSnackBars();
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
               } else if (double.tryParse(this.amount) == null) {
                 SnackBar e = SnackBar(
-                  content: Text("Enter a numerical value"),
+                  content: Text(
+                    "Enter a numerical value",
+                    style: Globals.askExpenseSt,
+                  ),
+                  duration: Globals.snackbarDuration,
                 );
                 ScaffoldMessenger.of(context).clearSnackBars();
                 ScaffoldMessenger.of(context).showSnackBar(e);
@@ -82,6 +91,7 @@ class _AskAmountPaidState extends State<AskAmountPaid> {
               }
               context.read<Glist>().addWhoPaid(widget.name, amount);
               print(widget.name.name + " " + amount);
+              print(context.read<Glist>().cExp.whoPaid.length);
               Navigator.pop(
                 context,
               );

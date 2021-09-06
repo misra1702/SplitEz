@@ -55,4 +55,6 @@ class Globals {
   static TextStyle askExpenseSt = GoogleFonts.kreon(
     fontSize: 24,
   );
+
+  static Duration snackbarDuration = Duration(milliseconds: 500);
 }

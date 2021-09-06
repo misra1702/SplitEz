@@ -1,7 +1,8 @@
 import 'package:bill1/globals.dart';
 import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
-import 'package:bill1/widgets/askAmountPaid.dart';
+import 'package:bill1/widgets/askWhoBoughtAmount.dart';
+import 'package:bill1/widgets/askWhoPaidAmount.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -58,9 +59,9 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       children: [
         titleExp(context),
         SizedBox(height: 20),
-        amountExp(context, cExp),
-        SizedBox(height: 20),
         whoPaid(context, cExp, cGrp),
+        SizedBox(height: 20),
+        whoBought(context, cGrp),
         SizedBox(height: 30),
         submitButton(cExp, context),
       ],
@@ -92,7 +93,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         showDialog(
             context: context,
             builder: (context) {
-              return AskAmountPaid(name: a);
+              return AskWhoPaidAmount(name: a);
             });
       },
       onCanceled: () {
@@ -159,7 +160,118 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       ),
     );
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [txt, cList, popUp],
+    );
+  }
+
+  Row whoBought(BuildContext context, Group cGrp) {
+    var txt = Text(
+      "Who Bought?",
+      style: GoogleFonts.kreon(fontSize: 24),
+    );
+    Expenses cExp = context.watch<Glist>().cExp;
+    var popUp = PopupMenuButton(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.teal,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 35,
+        ),
+      ),
+      offset: Offset(100, 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      onSelected: (Contacts a) {
+        if (cExp.whoPaid.length == 0) {
+          SnackBar e = SnackBar(
+            content: Text(
+              "Add who paid amount first",
+              style: Globals.askExpenseSt,
+            ),
+            duration: Globals.snackbarDuration,
+          );
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(e);
+          return;
+        }
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AskWhoBoughtAmount(name: a);
+            });
+      },
+      onCanceled: () {
+        print("Selecting who paid cancelled\n");
+      },
+      color: Colors.teal,
+      itemBuilder: (context) {
+        return cGrp.grpContacts.map(
+          (e) {
+            return PopupMenuItem(
+              child: Text(e.name),
+              textStyle: GoogleFonts.kreon(
+                fontSize: 22,
+              ),
+              value: e,
+            );
+          },
+        ).toList();
+      },
+    );
+
+    if (cExp.whoBought.length == 0) {
+      return Row(
+        children: [txt, SizedBox(width: 30), popUp],
+      );
+    }
+    var keys = cExp.whoPaid.keys.toList();
+    var cList = Container(
+      height: 200,
+      width: 150,
+      child: ListView.builder(
+        itemCount: keys.length,
+        itemBuilder: (context, index) {
+          return Card(
+            color: Colors.teal,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            margin: EdgeInsets.all(2),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    keys[index].name,
+                    style: GoogleFonts.kreon(
+                      fontSize: 25,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    cExp.whoPaid[keys[index]] ?? "",
+                    style: GoogleFonts.kreon(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [txt, cList, popUp],
     );
@@ -175,43 +287,15 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       onPressed: () {
         if (double.tryParse(cExp.amount) == null || cExp.amount == "") {
           SnackBar e = SnackBar(
-            content: Text('Amount should be a number'),
+            content: Text(
+              'Amount should be a number',
+              style: Globals.askExpenseSt,
+            ),
+            duration: Globals.snackbarDuration,
           );
           ScaffoldMessenger.of(context).showSnackBar(e);
         }
       },
-    );
-  }
-
-  TextField amountExp(BuildContext context, Expenses cExp) {
-    return TextField(
-      cursorColor: Colors.teal,
-      decoration: InputDecoration(
-        labelText: 'Amount',
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.teal,
-            width: 4,
-            style: BorderStyle.solid,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: Colors.black,
-            width: 2,
-            style: BorderStyle.solid,
-          ),
-        ),
-      ),
-      onChanged: (a) {
-        context.read<Glist>().setAmount = a;
-        print(cExp.amount);
-      },
-      style: GoogleFonts.kreon(fontSize: 24),
-      keyboardType: TextInputType.number,
-      textAlign: TextAlign.center,
     );
   }
 
