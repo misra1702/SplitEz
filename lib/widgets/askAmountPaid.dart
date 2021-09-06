@@ -82,6 +82,9 @@ class _AskAmountPaidState extends State<AskAmountPaid> {
               }
               context.read<Glist>().addWhoPaid(widget.name, amount);
               print(widget.name.name + " " + amount);
+              Navigator.pop(
+                context,
+              );
               return;
             },
             child: Text(

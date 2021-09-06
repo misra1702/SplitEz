@@ -1,6 +1,7 @@
 import 'package:bill1/globals.dart';
 import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
+import 'package:bill1/widgets/askAmountPaid.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -47,82 +48,120 @@ class ExpensesBody extends StatefulWidget {
 }
 
 class _ExpensesBodyState extends State<ExpensesBody> {
-  String whoPaid = "No One";
-  void func(String a) {
-    setState(() {
-      whoPaid = a;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     Expenses cExp = context.watch<Glist>().cExp;
     Group cGrp = context.read<Glist>().cGrp;
+
     return ListView(
-      shrinkWrap: true,
-      physics: ClampingScrollPhysics(),
       padding: EdgeInsets.all(20),
       children: [
         titleExp(context),
         SizedBox(height: 20),
         amountExp(context, cExp),
         SizedBox(height: 20),
-        Row(
-          children: [
-            Text(
-              "Who Paid ?",
-              style: GoogleFonts.kreon(fontSize: 24),
-            ),
-            // Expanded(
-            //   child: ListView.builder(
-            //     itemCount: cExp.whoPaid.length,
-            //     itemBuilder: (BuildContext context, int index) {
-            //       return Container();
-            //     },
-            //   ),
-            // ),
-            SizedBox(
-              width: 30,
-            ),
-            PopupMenuButton(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.teal,
-                ),
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-              ),
-              offset: Offset(100, 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              onSelected: (a) {
-                func(a.toString());
-              },
-              onCanceled: () {
-                print("No one");
-              },
-              color: Colors.teal,
-              itemBuilder: (context) {
-                return cGrp.grpContacts.map(
-                  (e) {
-                    return PopupMenuItem(
-                      child: Text(e.name),
-                      textStyle: GoogleFonts.kreon(
-                        fontSize: 22,
-                      ),
-                      value: e.name,
-                    );
-                  },
-                ).toList();
-              },
-            ),
-          ],
-        ),
+        whoPaid(context, cExp, cGrp),
+        SizedBox(height: 30),
         submitButton(cExp, context),
       ],
+    );
+  }
+
+  Row whoPaid(BuildContext context, Expenses cExp, Group cGrp) {
+    var txt = Text(
+      "Who Paid ?",
+      style: GoogleFonts.kreon(fontSize: 24),
+    );
+    var popUp = PopupMenuButton(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.teal,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 35,
+        ),
+      ),
+      offset: Offset(100, 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      onSelected: (Contacts a) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AskAmountPaid(name: a);
+            });
+      },
+      onCanceled: () {
+        print("Selecting who paid cancelled\n");
+      },
+      color: Colors.teal,
+      itemBuilder: (context) {
+        return cGrp.grpContacts.map(
+          (e) {
+            return PopupMenuItem(
+              child: Text(e.name),
+              textStyle: GoogleFonts.kreon(
+                fontSize: 22,
+              ),
+              value: e,
+            );
+          },
+        ).toList();
+      },
+    );
+
+    if (cExp.whoPaid.length == 0) {
+      return Row(
+        children: [txt, SizedBox(width: 30), popUp],
+      );
+    }
+    var keys = cExp.whoPaid.keys.toList();
+    var cList = Container(
+      height: 200,
+      width: 150,
+      child: ListView.builder(
+        itemCount: keys.length,
+        itemBuilder: (context, index) {
+          return Card(
+            color: Colors.teal,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            margin: EdgeInsets.all(2),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    keys[index].name,
+                    style: GoogleFonts.kreon(
+                      fontSize: 25,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    cExp.whoPaid[keys[index]] ?? "",
+                    style: GoogleFonts.kreon(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [txt, cList, popUp],
     );
   }
 
@@ -167,7 +206,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         ),
       ),
       onChanged: (a) {
-        context.read<Glist>().setAmount(a);
+        context.read<Glist>().setAmount = a;
         print(cExp.amount);
       },
       style: GoogleFonts.kreon(fontSize: 24),
