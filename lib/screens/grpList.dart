@@ -112,7 +112,7 @@ class _GrpListBodyState extends State<GrpListBody> {
             },
             trailing: IconButton(
               onPressed: () {
-                context.read<Glist>().deleteGrp(grp);
+                context.read<Glist>().deleteGrp=(grp);
               },
               icon: Icon(
                 Icons.delete,

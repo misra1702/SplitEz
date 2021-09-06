@@ -61,35 +61,46 @@ class Glist extends ChangeNotifier {
   late Group cGrp;
   Expenses cExp = Expenses();
 
-  void openGrp(Group grp) {
+  set openGrp(Group grp) {
     cGrp = grp;
   }
 
-  void addGrp(Group grp) {
+  set addGrp(Group grp) {
     box.put(grp.grpName, grp);
     notifyListeners();
   }
 
-  void deleteGrp(Group grp) {
+  set deleteGrp(Group grp) {
     box.delete(grp.grpName);
     notifyListeners();
   }
 
-  void addContact(Contacts con) {
+  set addContact(Contacts con) {
     cGrp.grpContacts.add(con);
     notifyListeners();
   }
 
-  void deleteContact(Contacts con) {
+  set deleteContact(Contacts con) {
     cGrp.grpContacts.remove(con);
     notifyListeners();
   }
 
   void setTitle(String title) {
     cExp.title = title;
+    notifyListeners();
   }
 
-  void setAmount(String amount) {
+  set setAmount(String amount) {
     cExp.amount = amount;
+    notifyListeners();
+  }
+
+  void openNewExpense() {
+    cExp = Expenses();
+  }
+
+  void addWhoPaid(Contacts a, String amount) {
+    cExp.whoPaid[a] = amount;
+    notifyListeners();
   }
 }

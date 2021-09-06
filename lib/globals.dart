@@ -52,4 +52,7 @@ class Globals {
       ),
     ),
   );
+  static TextStyle askExpenseSt = GoogleFonts.kreon(
+    fontSize: 24,
+  );
 }

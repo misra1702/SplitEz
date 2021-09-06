@@ -17,7 +17,7 @@ class _ExpListState extends State<ExpList> {
   @override
   Widget build(BuildContext context) {
     final Group grp = ModalRoute.of(context)?.settings.arguments as Group;
-    context.read<Glist>().openGrp(grp);
+    context.read<Glist>().openGrp = grp;
     Group cGrp = context.watch<Glist>().cGrp;
 
     return Scaffold(
@@ -45,6 +45,7 @@ class _ExpListState extends State<ExpList> {
       body: ExpListBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          context.read<Glist>().openNewExpense();
           Navigator.of(context).pushNamed('/askExp');
         },
         child: Icon(

@@ -16,7 +16,7 @@ class _GrpCreateState extends State<GrpCreate> {
   @override
   Widget build(BuildContext context) {
     final Group grp = ModalRoute.of(context)?.settings.arguments as Group;
-    context.read<Glist>().openGrp(grp);
+    context.read<Glist>().openGrp = grp;
     Group cGrp = context.watch<Glist>().cGrp;
     return Scaffold(
       drawer: Drawer(
@@ -61,7 +61,7 @@ class _GrpCreateState extends State<GrpCreate> {
       body: GrpCreateBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.read<Glist>().addGrp(cGrp);
+          context.read<Glist>().addGrp = grp;
           Navigator.popUntil(
             context,
             ModalRoute.withName('/grpList'),
@@ -107,7 +107,7 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
           return;
         }
       }
-      context.read<Glist>().addContact(nCon);
+      context.read<Glist>().addContact=(nCon);
       print("Done adding to cGrp");
     }
   }
@@ -161,7 +161,7 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
-                        context.read<Glist>().deleteContact(con);
+                        context.read<Glist>().deleteContact=(con);
                       },
                     ),
                   ),
