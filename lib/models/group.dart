@@ -11,7 +11,7 @@ class Group extends HiveObject {
   List<Contacts> grpContacts = [];
 
   @HiveField(2)
-  List<List<double>> expense = [];
+  List<Expenses> expense = [];
 
   Group({required this.grpName});
 }
@@ -35,13 +35,10 @@ class Expenses extends HiveObject {
   String title;
 
   @HiveField(1)
-  String amount = "";
+  List<double> whoPaid = [];
 
   @HiveField(2)
-  Map<Contacts, String> whoPaid = {};
+  List<double> whoBought = [];
 
-  @HiveField(3)
-  Map<Contacts, String> whoBought = {};
-
-  Expenses({this.amount = "", this.title = ""});
+  Expenses({this.title = ""});
 }

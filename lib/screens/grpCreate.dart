@@ -19,35 +19,12 @@ class _GrpCreateState extends State<GrpCreate> {
     context.read<Glist>().openGrp = grp;
     Group cGrp = context.watch<Glist>().cGrp;
     return Scaffold(
-      drawer: Drawer(
-        child: Column(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height / 3,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Colors.teal,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                "Drawer",
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            size: Globals.appBarIconSize,
+          ),
           onPressed: () {
             Navigator.popUntil(
               context,
@@ -55,20 +32,22 @@ class _GrpCreateState extends State<GrpCreate> {
             );
           },
         ),
-        title: Text(cGrp.grpName),
+        title: Text(
+          cGrp.grpName,
+          style: Globals.appBarTextStyle,
+        ),
         elevation: 30,
+        centerTitle: true,
       ),
       body: GrpCreateBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.read<Glist>().addGrp = grp;
-          Navigator.popUntil(
-            context,
-            ModalRoute.withName('/grpList'),
-          );
+          Navigator.of(context).pushNamed('/expList', arguments: grp);
         },
         child: Icon(
           Icons.check,
+          size: Globals.appBarIconSize,
           color: Colors.white,
         ),
       ),
@@ -107,7 +86,7 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
           return;
         }
       }
-      context.read<Glist>().addContact=(nCon);
+      context.read<Glist>().addContact = (nCon);
       print("Done adding to cGrp");
     }
   }
@@ -125,7 +104,7 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
           ElevatedButton(
             child: Text(
               "Add new contact",
-              style: Globals.st,
+              style: Globals.appBarTextStyle,
             ),
             onPressed: chooseContact,
             style: Globals.btnst,
@@ -161,7 +140,7 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
-                        context.read<Glist>().deleteContact=(con);
+                        context.read<Glist>().deleteContact = (con);
                       },
                     ),
                   ),

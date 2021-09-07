@@ -1,9 +1,11 @@
 import 'package:bill1/globals.dart';
 import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
+import 'package:bill1/widgets/askGroupDelete.dart';
 import 'package:bill1/widgets/askGrpName.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -34,6 +36,13 @@ class _GrpListState extends State<GrpList> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    var box = Hive.box<Group>("GrpDb");
+    box.close();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
@@ -46,13 +55,15 @@ class _GrpListState extends State<GrpList> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(
-              context: context,
-              builder: (context) {
-                return AskGrpName();
-              });
+            context: context,
+            builder: (context) {
+              return AskGrpName();
+            },
+          );
         },
         child: Icon(
           Icons.add,
+          size: Globals.appBarIconSize,
         ),
       ),
       body: GrpListBody(),
@@ -93,6 +104,7 @@ class _GrpListBodyState extends State<GrpListBody> {
         ),
       );
     }
+
     return ListView.separated(
       itemCount: box.length,
       itemBuilder: (BuildContext context, int index) {
@@ -112,7 +124,12 @@ class _GrpListBodyState extends State<GrpListBody> {
             },
             trailing: IconButton(
               onPressed: () {
-                context.read<Glist>().deleteGrp=(grp);
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AskGroupDelete(name: grp.grpName);
+                  },
+                );
               },
               icon: Icon(
                 Icons.delete,
@@ -121,10 +138,7 @@ class _GrpListBodyState extends State<GrpListBody> {
             ),
             title: Text(
               grp.grpName,
-              style: GoogleFonts.kreon(
-                color: Colors.white,
-                fontSize: 24,
-              ),
+              style: Globals.cardTextStyle,
             ),
           ),
         );

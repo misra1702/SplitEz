@@ -2,19 +2,26 @@ import 'package:bill1/models/group.dart';
 import 'package:bill1/screens/askExp.dart';
 import 'package:bill1/screens/expList.dart';
 import 'package:bill1/screens/grpList.dart';
+import 'package:bill1/themes/themeLight.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/screens/grpCreate.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:bill1/screens/groupInfo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(GroupAdapter());
   Hive.registerAdapter(ContactsAdapter());
+  Hive.registerAdapter(ExpensesAdapter());
+
   await Hive.openBox<Group>('GrpDb');
+  // var box = Hive.box<Group>('GrpDb');
+  // box.clear();
+  // box.deleteFromDisk();
   runApp(MyApp());
 }
 
@@ -45,12 +52,13 @@ class MyApp extends StatelessWidget {
           },
           '/askExp': (context) {
             return AskExp();
+          },
+          '/grpInfo': (context) {
+            return GrpInfo();
           }
         },
         title: 'Bill App',
-        theme: ThemeData(
-          primarySwatch: Colors.teal,
-        ),
+        theme: ThemeLight.theme1,
       ),
     );
   }
@@ -61,6 +69,7 @@ class Glist extends ChangeNotifier {
   late Group cGrp;
   Expenses cExp = Expenses();
 
+  //Group Functions here
   set openGrp(Group grp) {
     cGrp = grp;
   }
@@ -70,8 +79,8 @@ class Glist extends ChangeNotifier {
     notifyListeners();
   }
 
-  set deleteGrp(Group grp) {
-    box.delete(grp.grpName);
+  void deleteGrp(String name) {
+    box.delete(name);
     notifyListeners();
   }
 
@@ -85,22 +94,31 @@ class Glist extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setTitle(String title) {
+  void openNewExpense() {
+    cExp = Expenses();
+    int length = cGrp.grpContacts.length;
+    cExp.whoBought = List<double>.filled(length, 0);
+    cExp.whoPaid = List<double>.filled(length, 0);
+  }
+  //Expense functions here
+
+  void setExpenseTitle(String title) {
     cExp.title = title;
     notifyListeners();
   }
 
-  set setAmount(String amount) {
-    cExp.amount = amount;
+  void addWhoPaid(int index, double amount) {
+    cExp.whoPaid[index] += amount;
     notifyListeners();
   }
 
-  void openNewExpense() {
-    cExp = Expenses();
+  void addWhoBought(int index, double amount) {
+    cExp.whoBought[index] += amount;
+    notifyListeners();
   }
 
-  void addWhoPaid(Contacts a, String amount) {
-    cExp.whoPaid[a] = amount;
+  void addExpense() {
+    cGrp.expense.add(cExp);
     notifyListeners();
   }
 }

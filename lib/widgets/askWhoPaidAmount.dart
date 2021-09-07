@@ -7,8 +7,8 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 class AskWhoPaidAmount extends StatefulWidget {
-  const AskWhoPaidAmount({Key? key, required this.name}) : super(key: key);
-  final Contacts name;
+  const AskWhoPaidAmount({Key? key, required this.index}) : super(key: key);
+  final int index;
   @override
   _AskWhoPaidAmountState createState() => _AskWhoPaidAmountState();
 }
@@ -64,7 +64,6 @@ class _AskWhoPaidAmountState extends State<AskWhoPaidAmount> {
         Center(
           child: ElevatedButton(
             onPressed: () {
-              var box = Hive.box<Group>('GrpDb');
               this.amount = this.amount.trim();
               if (this.amount == "") {
                 SnackBar e = SnackBar(
@@ -89,12 +88,13 @@ class _AskWhoPaidAmountState extends State<AskWhoPaidAmount> {
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
               }
-              context.read<Glist>().addWhoPaid(widget.name, amount);
-              print(widget.name.name + " " + amount);
+              context.read<Glist>().addWhoPaid(
+                    widget.index,
+                    double.parse(amount),
+                  );
+              print(widget.index.toString() + " " + amount);
               print(context.read<Glist>().cExp.whoPaid.length);
-              Navigator.pop(
-                context,
-              );
+              Navigator.pop(context);
               return;
             },
             child: Text(

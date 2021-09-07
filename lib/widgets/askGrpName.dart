@@ -59,7 +59,7 @@ class _AskGrpNameState extends State<AskGrpName> {
           fontSize: 25,
         ),
       ),
-      backgroundColor: Colors.teal,
+      backgroundColor: Theme.of(context).primaryColor,
       actions: [
         Center(
           child: ElevatedButton(

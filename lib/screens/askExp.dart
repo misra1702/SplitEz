@@ -49,6 +49,8 @@ class ExpensesBody extends StatefulWidget {
 }
 
 class _ExpensesBodyState extends State<ExpensesBody> {
+  TextEditingController _title = TextEditingController();
+  TextEditingController _amount = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Expenses cExp = context.watch<Glist>().cExp;
@@ -58,6 +60,35 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       padding: EdgeInsets.all(20),
       children: [
         titleExp(context),
+        SizedBox(height: 20),
+        TextField(
+          key: GlobalKey(),
+          controller: _amount,
+          autocorrect: false,
+          cursorColor: Theme.of(context).primaryColor,
+          style: Globals.textFieldStyle,
+          decoration: InputDecoration(
+            labelText: 'Amount',
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(
+                color: Colors.teal,
+                width: 4,
+                style: BorderStyle.solid,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(
+                color: Colors.black,
+                width: 2,
+                style: BorderStyle.solid,
+              ),
+            ),
+          ),
+          keyboardType: TextInputType.number,
+          textAlign: TextAlign.center,
+        ),
         SizedBox(height: 20),
         whoPaid(context, cExp, cGrp),
         SizedBox(height: 20),
@@ -71,18 +102,18 @@ class _ExpensesBodyState extends State<ExpensesBody> {
   Row whoPaid(BuildContext context, Expenses cExp, Group cGrp) {
     var txt = Text(
       "Who Paid ?",
-      style: GoogleFonts.kreon(fontSize: 24),
+      style: Globals.bodyLargeTextStyle,
     );
     var popUp = PopupMenuButton(
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.teal,
+          color: Theme.of(context).primaryColor,
           shape: BoxShape.circle,
         ),
         child: Icon(
           Icons.add,
           color: Colors.white,
-          size: 35,
+          size: Globals.appBarIconSize,
         ),
       ),
       offset: Offset(100, 20),
@@ -90,10 +121,13 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         borderRadius: BorderRadius.circular(20),
       ),
       onSelected: (Contacts a) {
+        int index = cGrp.grpContacts.indexOf(a);
         showDialog(
             context: context,
             builder: (context) {
-              return AskWhoPaidAmount(name: a);
+              return AskWhoPaidAmount(
+                index: index,
+              );
             });
       },
       onCanceled: () {
@@ -114,41 +148,45 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         ).toList();
       },
     );
-
-    if (cExp.whoPaid.length == 0) {
+    List<int> indices = [];
+    for (int i = 0; i < cExp.whoPaid.length; i++) {
+      if (cExp.whoPaid[i] > 0) indices.add(i);
+    }
+    if (indices.length == 0) {
       return Row(
         children: [txt, SizedBox(width: 30), popUp],
       );
     }
-    var keys = cExp.whoPaid.keys.toList();
+    print(indices.length.toString());
     var cList = Container(
       height: 200,
       width: 150,
       child: ListView.builder(
-        itemCount: keys.length,
+        itemCount: indices.length,
         itemBuilder: (context, index) {
           return Card(
-            color: Colors.teal,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             margin: EdgeInsets.all(2),
+            shadowColor: Theme.of(context).primaryColor,
+            elevation: 5,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    keys[index].name,
+                    cGrp.grpContacts[indices[index]].name,
                     style: GoogleFonts.kreon(
-                      fontSize: 25,
-                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
                     ),
                   ),
                   Text(
-                    cExp.whoPaid[keys[index]] ?? "",
+                    cExp.whoPaid[indices[index]].toString(),
                     style: GoogleFonts.kreon(
-                      fontSize: 18,
-                      color: Colors.white,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -201,10 +239,13 @@ class _ExpensesBodyState extends State<ExpensesBody> {
           ScaffoldMessenger.of(context).showSnackBar(e);
           return;
         }
+        int index = cGrp.grpContacts.indexOf(a);
         showDialog(
             context: context,
             builder: (context) {
-              return AskWhoBoughtAmount(name: a);
+              return AskWhoBoughtAmount(
+                index: index,
+              );
             });
       },
       onCanceled: () {
@@ -231,44 +272,44 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         children: [txt, SizedBox(width: 30), popUp],
       );
     }
-    var keys = cExp.whoPaid.keys.toList();
+    // var keys = cExp.whoPaid.keys.toList();
     var cList = Container(
       height: 200,
       width: 150,
-      child: ListView.builder(
-        itemCount: keys.length,
-        itemBuilder: (context, index) {
-          return Card(
-            color: Colors.teal,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            margin: EdgeInsets.all(2),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    keys[index].name,
-                    style: GoogleFonts.kreon(
-                      fontSize: 25,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    cExp.whoPaid[keys[index]] ?? "",
-                    style: GoogleFonts.kreon(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+      // child: ListView.builder(
+      //   itemCount: keys.length,
+      //   itemBuilder: (context, index) {
+      //     return Card(
+      //       color: Colors.teal,
+      //       shape:
+      //           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      //       margin: EdgeInsets.all(2),
+      //       child: Padding(
+      //         padding: const EdgeInsets.all(8.0),
+      //         child: Column(
+      //           mainAxisAlignment: MainAxisAlignment.center,
+      //           // children: [
+      //           //   Text(
+      //           //     keys[index].name,
+      //           //     style: GoogleFonts.kreon(
+      //           //       fontSize: 25,
+      //           //       color: Colors.white,
+      //           //     ),
+      //           //   ),
+      //           //   Text(
+      //           //     cExp.whoPaid[keys[index]] ?? "",
+      //           //     style: GoogleFonts.kreon(
+      //           //       fontSize: 18,
+      //           //       color: Colors.white,
+      //           //       fontWeight: FontWeight.bold,
+      //           //     ),
+      //           //   ),
+      //           // ],
+      //         ),
+      //       ),
+      //     );
+      //   },
+      // ),
     );
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -285,14 +326,12 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       ),
       style: Globals.btnst,
       onPressed: () {
-        if (double.tryParse(cExp.amount) == null || cExp.amount == "") {
+        if (cExp.whoPaid.length == 0) {
           SnackBar e = SnackBar(
-            content: Text(
-              'Amount should be a number',
-              style: Globals.askExpenseSt,
-            ),
+            content: Text("Please provide Who Paid?"),
             duration: Globals.snackbarDuration,
           );
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(e);
         }
       },
@@ -327,7 +366,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         ),
       ),
       onChanged: (a) {
-        context.read<Glist>().setTitle(a);
+        context.read<Glist>().setExpenseTitle(a);
       },
       keyboardType: TextInputType.text,
       textAlign: TextAlign.center,

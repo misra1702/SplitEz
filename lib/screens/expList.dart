@@ -23,9 +23,12 @@ class _ExpListState extends State<ExpList> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            size: Globals.appBarIconSize,
+          ),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.popUntil(context, ModalRoute.withName('/grpList'));
           },
         ),
         title: Text(
@@ -35,9 +38,12 @@ class _ExpListState extends State<ExpList> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: Icon(
+              Icons.info_outline,
+              size: Globals.appBarIconSize,
+            ),
             onPressed: () {
-              Navigator.of(context).pushNamed('/grpCreate', arguments: grp);
+              Navigator.of(context).pushNamed('/grpInfo', arguments: grp);
             },
           ),
         ],
@@ -77,7 +83,7 @@ class _ExpListBodyState extends State<ExpListBody> {
           child: ListView.separated(
             itemCount: cGrp.expense.length,
             itemBuilder: (BuildContext context, int index) {
-              return ListTile(title: Text(cGrp.expense[index][0].toString()));
+              return ListTile(title: Text(cGrp.expense[index].title));
             },
             separatorBuilder: (BuildContext context, int index) {
               return Divider();

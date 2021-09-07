@@ -20,9 +20,7 @@ class GroupAdapter extends TypeAdapter<Group> {
       grpName: fields[0] as String,
     )
       ..grpContacts = (fields[1] as List).cast<Contacts>()
-      ..expense = (fields[2] as List)
-          .map((dynamic e) => (e as List).cast<double>())
-          .toList();
+      ..expense = (fields[2] as List).cast<Expenses>();
   }
 
   @override
@@ -95,24 +93,21 @@ class ExpensesAdapter extends TypeAdapter<Expenses> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Expenses(
-      amount: fields[1] as String,
       title: fields[0] as String,
     )
-      ..whoPaid = (fields[2] as Map).cast<Contacts, String>()
-      ..whoBought = (fields[3] as Map).cast<Contacts, String>();
+      ..whoPaid = (fields[1] as List).cast<double>()
+      ..whoBought = (fields[2] as List).cast<double>();
   }
 
   @override
   void write(BinaryWriter writer, Expenses obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
-      ..write(obj.amount)
-      ..writeByte(2)
       ..write(obj.whoPaid)
-      ..writeByte(3)
+      ..writeByte(2)
       ..write(obj.whoBought);
   }
 
