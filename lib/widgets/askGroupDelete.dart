@@ -16,7 +16,7 @@ class AskGroupDelete extends StatelessWidget {
       elevation: 10,
       title: Center(
         child: Text(
-          name,
+          "Delete " + name,
           style: GoogleFonts.kreon(
             color: Colors.white,
             fontSize: 30,
@@ -34,8 +34,8 @@ class AskGroupDelete extends StatelessWidget {
                 Navigator.of(context).pop();
               },
               icon: Icon(
-                Icons.done_outline,
-                size: Globals.appBarIconSize,
+                Icons.check_circle,
+                size: Globals.appBarIconSize + 5,
                 color: Colors.white,
               ),
             ),
@@ -46,7 +46,7 @@ class AskGroupDelete extends StatelessWidget {
               },
               icon: Icon(
                 Icons.cancel,
-                size: Globals.appBarIconSize,
+                size: Globals.appBarIconSize + 5,
                 color: Colors.white,
               ),
             ),

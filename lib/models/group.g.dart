@@ -96,19 +96,22 @@ class ExpensesAdapter extends TypeAdapter<Expenses> {
       title: fields[0] as String,
     )
       ..whoPaid = (fields[1] as List).cast<double>()
-      ..whoBought = (fields[2] as List).cast<double>();
+      ..whoBought = (fields[2] as List).cast<double>()
+      ..amount = fields[3] as double;
   }
 
   @override
   void write(BinaryWriter writer, Expenses obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
       ..write(obj.whoPaid)
       ..writeByte(2)
-      ..write(obj.whoBought);
+      ..write(obj.whoBought)
+      ..writeByte(3)
+      ..write(obj.amount);
   }
 
   @override

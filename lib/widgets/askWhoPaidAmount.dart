@@ -19,7 +19,7 @@ class _AskWhoPaidAmountState extends State<AskWhoPaidAmount> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      contentPadding: EdgeInsets.all(20),
+      actionsPadding: EdgeInsets.only(bottom: 10),
       elevation: 10,
       title: Center(
         child: Text(
@@ -34,6 +34,7 @@ class _AskWhoPaidAmountState extends State<AskWhoPaidAmount> {
         onChanged: (String value) {
           this.amount = value;
         },
+        maxLength: Globals.textFieldLength,
         controller: _grpName,
         cursorColor: Colors.white,
         decoration: InputDecoration(
@@ -104,6 +105,7 @@ class _AskWhoPaidAmountState extends State<AskWhoPaidAmount> {
                 fontSize: 20,
               ),
             ),
+            style: Globals.btnst,
           ),
         ),
       ],

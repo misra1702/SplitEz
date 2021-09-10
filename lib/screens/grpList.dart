@@ -44,6 +44,7 @@ class _GrpListState extends State<GrpList> {
 
   @override
   Widget build(BuildContext context) {
+    print("Inside grpList");
     return new Scaffold(
       appBar: AppBar(
         title: Text(
@@ -109,18 +110,34 @@ class _GrpListBodyState extends State<GrpListBody> {
       itemCount: box.length,
       itemBuilder: (BuildContext context, int index) {
         Group grp = box.getAt(index)!;
+        double t = 10, b = 10, l = 10, r = 10;
+        if (index == 0) t = 30;
         return Card(
-          key: ValueKey(grp),
           elevation: 10,
-          margin: EdgeInsets.all(10),
-          color: Colors.teal,
+          margin: EdgeInsets.fromLTRB(l, t, r, b),
+          color: Theme.of(context).primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: Colors.yellow,
+              width: 2,
+            ),
+          ),
+          shadowColor: Theme.of(context).primaryColor,
+          key: ValueKey(grp),
           child: ListTile(
-            leading: Icon(
-              Icons.list,
-              color: Colors.white,
+            contentPadding: EdgeInsets.all(5),
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.list,
+                color: Colors.white,
+                size: Globals.appBarIconSize,
+              ),
             ),
             onTap: () {
-              Navigator.of(context).pushNamed('/expList', arguments: grp);
+              Navigator.of(context)
+                  .pushNamed('/expList', arguments: grp.grpName);
             },
             trailing: IconButton(
               onPressed: () {
@@ -132,8 +149,9 @@ class _GrpListBodyState extends State<GrpListBody> {
                 );
               },
               icon: Icon(
-                Icons.delete,
+                Icons.delete_outline,
                 color: Colors.white,
+                size: Globals.appBarIconSize,
               ),
             ),
             title: Text(

@@ -19,7 +19,7 @@ class _AskWhoBoughtAmountState extends State<AskWhoBoughtAmount> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      contentPadding: EdgeInsets.all(20),
+      actionsPadding: EdgeInsets.only(bottom: 10),
       elevation: 10,
       title: Center(
         child: Text(
@@ -34,6 +34,7 @@ class _AskWhoBoughtAmountState extends State<AskWhoBoughtAmount> {
         onChanged: (String value) {
           this.amount = value;
         },
+        maxLength: Globals.textFieldLength,
         controller: _grpName,
         cursorColor: Colors.white,
         decoration: InputDecoration(
@@ -63,6 +64,7 @@ class _AskWhoBoughtAmountState extends State<AskWhoBoughtAmount> {
       actions: [
         Center(
           child: ElevatedButton(
+            style: Globals.btnst,
             onPressed: () {
               this.amount = this.amount.trim();
               if (this.amount == "") {
@@ -88,12 +90,10 @@ class _AskWhoBoughtAmountState extends State<AskWhoBoughtAmount> {
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
               }
-              // context.read<Glist>().addWhoPaid(widget.name, amount);
-              print(widget.index.toString() + " " + amount);
-              print(context.read<Glist>().cExp.whoPaid.length);
-              Navigator.pop(
-                context,
-              );
+              context
+                  .read<Glist>()
+                  .addWhoBought(widget.index, double.parse(amount));
+              Navigator.pop(context);
               return;
             },
             child: Text(

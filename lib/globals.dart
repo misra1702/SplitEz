@@ -45,16 +45,18 @@ class Globals {
     fontSize: 20,
     color: Colors.red,
   );
+  static int textFieldLength = 12;
 
   static ButtonStyle btnst = ElevatedButton.styleFrom(
+    elevation: 5,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(20),
-        bottomRight: Radius.circular(20),
-        topRight: Radius.circular(5),
-        bottomLeft: Radius.circular(5),
+      borderRadius: BorderRadius.circular(20),
+      side: BorderSide(
+        color: Colors.yellow,
+        width: 2,
       ),
     ),
+    padding: EdgeInsets.all(10),
   );
   static ButtonStyle btnstGrpList = TextButton.styleFrom(
     shape: CircleBorder(),

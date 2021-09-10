@@ -15,9 +15,9 @@ class GrpCreate extends StatefulWidget {
 class _GrpCreateState extends State<GrpCreate> {
   @override
   Widget build(BuildContext context) {
-    final Group grp = ModalRoute.of(context)?.settings.arguments as Group;
-    context.read<Glist>().openGrp = grp;
     Group cGrp = context.watch<Glist>().cGrp;
+    print("Inside grpCreate");
+    print("Grpname : $cGrp.grpName");
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -42,8 +42,8 @@ class _GrpCreateState extends State<GrpCreate> {
       body: GrpCreateBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.read<Glist>().addGrp = grp;
-          Navigator.of(context).pushNamed('/expList', arguments: grp);
+          context.read<Glist>().addGrp(cGrp);
+          Navigator.of(context).pushNamed('/expList', arguments: cGrp.grpName);
         },
         child: Icon(
           Icons.check,

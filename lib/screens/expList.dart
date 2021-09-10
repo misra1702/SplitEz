@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ExpList extends StatefulWidget {
-  const ExpList({
-    Key? key,
-  }) : super(key: key);
+  const ExpList({Key? key}) : super(key: key);
 
   @override
   _ExpListState createState() => _ExpListState();
@@ -16,8 +14,9 @@ class ExpList extends StatefulWidget {
 class _ExpListState extends State<ExpList> {
   @override
   Widget build(BuildContext context) {
-    final Group grp = ModalRoute.of(context)?.settings.arguments as Group;
-    context.read<Glist>().openGrp = grp;
+    final String grpName = ModalRoute.of(context)?.settings.arguments as String;
+    print("Inside expList : Arguemnet provided :" + grpName);
+    context.read<Glist>().openGrp(grpName);
     Group cGrp = context.watch<Glist>().cGrp;
 
     return Scaffold(
@@ -43,7 +42,7 @@ class _ExpListState extends State<ExpList> {
               size: Globals.appBarIconSize,
             ),
             onPressed: () {
-              Navigator.of(context).pushNamed('/grpInfo', arguments: grp);
+              Navigator.of(context).pushNamed('/grpInfo', arguments: grpName);
             },
           ),
         ],
@@ -71,26 +70,61 @@ class ExpListBody extends StatefulWidget {
 class _ExpListBodyState extends State<ExpListBody> {
   @override
   Widget build(BuildContext context) {
-    var cGrp = context.watch<Glist>().cGrp;
-    if (cGrp.expense.isEmpty) {
+    List<Expenses> exp = context.watch<Glist>().cGrp.expense;
+
+    if (exp.isEmpty) {
       return Center(
         child: Text("Click + to add new expense."),
       );
     }
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.separated(
-            itemCount: cGrp.expense.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(title: Text(cGrp.expense[index].title));
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return Divider();
-            },
+    print("Expenses length is:" + exp.length.toString());
+
+    return ListView.builder(
+      itemCount: exp.length,
+      itemBuilder: (BuildContext context, int index) {
+        String name = exp[index].title;
+        String amount = exp[index].amount.toString();
+        if (name == "") name = "No title";
+        return Card(
+          elevation: 10,
+          margin: EdgeInsets.all(10),
+          color: Theme.of(context).primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: Colors.yellow,
+              width: 2,
+            ),
           ),
-        ),
-      ],
+          shadowColor: Theme.of(context).primaryColor,
+          child: ListTile(
+            onTap: () {
+              context.read<Glist>().setExpense(exp[index]);
+              Navigator.of(context).pushNamed('/expDetail');
+            },
+            title: Text(
+              name,
+              style: Globals.cardTextStyle,
+            ),
+            subtitle: Text(
+              amount,
+              style: Globals.numHeadingTextStyle.copyWith(
+                color: Colors.yellow,
+              ),
+            ),
+            trailing: IconButton(
+              icon: Icon(
+                Icons.delete_outline,
+                color: Colors.white,
+                size: Globals.appBarIconSize,
+              ),
+              onPressed: () {
+                context.read<Glist>().delExpense(index);
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

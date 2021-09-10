@@ -1,13 +1,13 @@
 import 'package:bill1/globals.dart';
+import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 class AskGrpName extends StatefulWidget {
-  const AskGrpName({
-    Key? key,
-  }) : super(key: key);
+  const AskGrpName({Key? key}) : super(key: key);
 
   @override
   _AskGrpNameState createState() => _AskGrpNameState();
@@ -15,11 +15,10 @@ class AskGrpName extends StatefulWidget {
 
 class _AskGrpNameState extends State<AskGrpName> {
   final TextEditingController _grpName = TextEditingController();
-  String grpName = "";
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      contentPadding: EdgeInsets.all(20),
+      actionsPadding: EdgeInsets.only(bottom: 10),
       elevation: 10,
       title: Center(
         child: Text(
@@ -31,9 +30,6 @@ class _AskGrpNameState extends State<AskGrpName> {
         ),
       ),
       content: TextField(
-        onChanged: (String value) {
-          this.grpName = value;
-        },
         controller: _grpName,
         cursorColor: Colors.white,
         decoration: InputDecoration(
@@ -63,10 +59,11 @@ class _AskGrpNameState extends State<AskGrpName> {
       actions: [
         Center(
           child: ElevatedButton(
+            style: Globals.btnst,
             onPressed: () {
               var box = Hive.box<Group>('GrpDb');
-              this.grpName = this.grpName.trim();
-              if (this.grpName == "") {
+              this._grpName.text = this._grpName.text.trim();
+              if (this._grpName.text == "") {
                 SnackBar e = SnackBar(
                   content: Text(
                     "Group Name cannot be empty",
@@ -76,7 +73,7 @@ class _AskGrpNameState extends State<AskGrpName> {
                 );
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
-              } else if (box.containsKey(grpName)) {
+              } else if (box.containsKey(_grpName.text)) {
                 SnackBar e = SnackBar(
                   content: Text(
                     "Group already exists.",
@@ -87,10 +84,8 @@ class _AskGrpNameState extends State<AskGrpName> {
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
               }
-              Navigator.of(context).pushNamed(
-                '/grpCreate',
-                arguments: Group(grpName: this.grpName),
-              );
+              context.read<Glist>().cGrpName(_grpName.text);
+              Navigator.of(context).pushNamed('/grpCreate');
             },
             child: Text(
               "SUBMIT",

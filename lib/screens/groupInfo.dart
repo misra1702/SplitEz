@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,10 @@ class GrpInfo extends StatefulWidget {
 class _GrpInfoState extends State<GrpInfo> {
   @override
   Widget build(BuildContext context) {
-    final Group grp = ModalRoute.of(context)?.settings.arguments as Group;
+    print("Inside groupInfo");
+    final String grpName = ModalRoute.of(context)?.settings.arguments as String;
+    context.read<Glist>().openGrp(grpName);
+    Group cGrp = context.watch<Glist>().cGrp;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -32,19 +37,18 @@ class _GrpInfoState extends State<GrpInfo> {
           },
         ),
         title: Text(
-          grp.grpName,
+          cGrp.grpName,
           style: Globals.appBarTextStyle,
         ),
         elevation: 30,
       ),
-      body: GrpInfoBody(grp: grp),
+      body: GrpInfoBody(),
     );
   }
 }
 
 class GrpInfoBody extends StatefulWidget {
-  GrpInfoBody({Key? key, required this.grp}) : super(key: key);
-  final Group grp;
+  GrpInfoBody({Key? key}) : super(key: key);
 
   @override
   _GrpInfoBodyState createState() => _GrpInfoBodyState();
@@ -55,45 +59,79 @@ class _GrpInfoBodyState extends State<GrpInfoBody> {
   List<double> whoBought = [];
   double totalExp = 0;
 
-  void func() {
-    int cnt = widget.grp.expense.length;
-    int n = widget.grp.grpContacts.length;
+  void func(Group grp) {
+    int cnt = grp.expense.length;
+    int n = grp.grpContacts.length;
+    totalExp = 0;
     whoPaid = List<double>.filled(n, 0);
     whoBought = List<double>.filled(n, 0);
     for (int i = 0; i < cnt; i++) {
       for (int j = 0; j < n; j++) {
-        whoPaid[j] += widget.grp.expense[i].whoPaid[j];
-        totalExp += widget.grp.expense[i].whoPaid[j];
-        whoBought[j] += widget.grp.expense[i].whoBought[j];
+        whoPaid[j] += grp.expense[i].whoPaid[j];
+        totalExp += grp.expense[i].whoPaid[j];
+        whoBought[j] += grp.expense[i].whoBought[j];
       }
     }
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    func();
+    Group cGrp = context.watch<Glist>().cGrp;
+    func(cGrp);
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 30),
-          Text(
-            totalExp.toString(),
-            style: Globals.numHeadingTextStyle,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Expense = ",
+                style: Globals.bodyLargeTextStyle.copyWith(
+                  fontSize: 35,
+                ),
+              ),
+              Text(
+                totalExp.toString(),
+                style: Globals.numHeadingTextStyle,
+              ),
+            ],
           ),
           SizedBox(height: 20),
           Expanded(
-            child: ListView.separated(
-              itemCount: widget.grp.grpContacts.length,
+            child: ListView.builder(
+              itemCount: cGrp.grpContacts.length,
               itemBuilder: (BuildContext context, int index) {
-                Contacts con = widget.grp.grpContacts[index];
+                MaterialColor netAmountColor = Colors.teal;
+                double netAmount = whoPaid[index] - whoBought[index];
+                if (netAmount < 0) netAmountColor = Colors.red;
+                Contacts con = cGrp.grpContacts[index];
                 return Card(
+                  elevation: 2,
+                  margin: EdgeInsets.all(15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color: Colors.yellow,
+                      width: 2,
+                    ),
+                  ),
+                  shadowColor: Theme.of(context).primaryColor,
                   child: ListTile(
                     title: Text(
                       "${con.name}",
                       style: Globals.st,
                     ),
-                    subtitle: Text("${con.phoneNum}"),
+                    subtitle: Text(
+                      netAmount.toStringAsFixed(2),
+                      style: TextStyle(
+                        color: netAmountColor,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     leading: TextButton(
                       onPressed: () {},
                       child: Text(
@@ -104,25 +142,27 @@ class _GrpInfoBodyState extends State<GrpInfoBody> {
                           color: Colors.white,
                         ),
                       ),
-                      style: Globals.btnstGrpList,
+                      style: TextButton.styleFrom(
+                        shape: CircleBorder(),
+                        backgroundColor:
+                            Colors.primaries[Random().nextInt(index + 5)],
+                        padding: EdgeInsets.all(10),
+                      ),
                     ),
                     trailing: Column(
                       children: [
                         Text(
-                          whoPaid[index].toString(),
+                          whoPaid[index].toStringAsFixed(2),
                           style: Globals.numPaidTextStyle,
                         ),
                         Text(
-                          whoBought[index].toString(),
+                          whoBought[index].toStringAsFixed(2),
                           style: Globals.numBoughtTextStyle,
                         ),
                       ],
                     ),
                   ),
                 );
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return Divider();
               },
             ),
           ),

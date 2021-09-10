@@ -40,5 +40,7 @@ class Expenses extends HiveObject {
   @HiveField(2)
   List<double> whoBought = [];
 
+  @HiveField(3)
+  double amount = 0;
   Expenses({this.title = ""});
 }
