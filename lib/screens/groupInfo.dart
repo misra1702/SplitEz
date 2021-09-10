@@ -4,7 +4,6 @@ import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/globals.dart';
-import 'package:fluttercontactpicker/fluttercontactpicker.dart';
 import 'package:provider/provider.dart';
 
 class GrpInfo extends StatefulWidget {

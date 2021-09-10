@@ -3,7 +3,6 @@ import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 class AskName extends StatefulWidget {
@@ -61,7 +60,6 @@ class _AskNameState extends State<AskName> {
           child: ElevatedButton(
             style: Globals.btnst,
             onPressed: () {
-              var box = Hive.box<Group>('GrpDb');
               this._name.text = this._name.text.trim();
               if (this._name.text == "") {
                 SnackBar e = SnackBar(

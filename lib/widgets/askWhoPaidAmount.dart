@@ -1,9 +1,7 @@
 import 'package:bill1/globals.dart';
 import 'package:bill1/main.dart';
-import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 class AskWhoPaidAmount extends StatefulWidget {

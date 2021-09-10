@@ -5,7 +5,6 @@ import 'package:bill1/widgets/askWhoBoughtAmount.dart';
 import 'package:bill1/widgets/askWhoPaidAmount.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 class AskExp extends StatefulWidget {

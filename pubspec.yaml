@@ -41,6 +41,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   hive_generator: ^1.1.0
+  flutter_launcher_icons: ^0.9.2
+
+flutter_icons:
+  image_path: "assets/icons/launch_icon.png"
+  android:  true
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
