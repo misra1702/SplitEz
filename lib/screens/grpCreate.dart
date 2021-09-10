@@ -1,8 +1,10 @@
 import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
+import 'package:bill1/widgets/askName.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/globals.dart';
 import 'package:fluttercontactpicker/fluttercontactpicker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class GrpCreate extends StatefulWidget {
@@ -67,6 +69,16 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
   late Group cGrp;
 
   chooseContact() async {
+    var status = await Permission.contacts.status;
+    print(status);
+    if (status.isDenied) {
+      SnackBar e =
+          SnackBar(content: Text("Permission for contacts is not provided"));
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(e);
+      print(status);
+      return;
+    }
     FullContact? a;
     try {
       a = await FlutterContactPicker.pickFullContact();
@@ -101,13 +113,33 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
           SizedBox(
             height: 20,
           ),
-          ElevatedButton(
-            child: Text(
-              "Add new contact",
-              style: Globals.appBarTextStyle,
-            ),
-            onPressed: chooseContact,
-            style: Globals.btnst,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                child: Text(
+                  "Add from contact",
+                  style: Globals.appBarTextStyle,
+                ),
+                onPressed: chooseContact,
+                style: Globals.btnst,
+              ),
+              ElevatedButton(
+                child: Text(
+                  "Add",
+                  style: Globals.appBarTextStyle,
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AskName();
+                    },
+                  );
+                },
+                style: Globals.btnst,
+              ),
+            ],
           ),
           SizedBox(
             height: 20,

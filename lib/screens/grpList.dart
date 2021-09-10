@@ -24,9 +24,9 @@ class _GrpListState extends State<GrpList> {
       status = await Permission.contacts.request();
       print(status);
     }
-    if (status.isPermanentlyDenied) {
-      openAppSettings();
-    }
+    // if (status.isPermanentlyDenied) {
+    //   openAppSettings();
+    // }
   }
 
   @override

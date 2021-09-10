@@ -153,6 +153,18 @@ class Glist extends ChangeNotifier {
     notifyListeners();
   }
 
+  void deleteWhoPaid(int index) {
+    cExp.whoPaid[index] = 0;
+    print("Deleting whoPaid " + index.toString());
+    notifyListeners();
+  }
+
+  void deleteWhoBought(int index) {
+    cExp.whoBought[index] = 0;
+    print("Deleting whoBought " + index.toString());
+    notifyListeners();
+  }
+
   void addWhoBought(int index, double amount) {
     cExp.whoBought[index] = amount;
     print("Adding whoBought " +
