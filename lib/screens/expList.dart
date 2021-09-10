@@ -78,16 +78,17 @@ class _ExpListBodyState extends State<ExpListBody> {
       );
     }
     print("Expenses length is:" + exp.length.toString());
-
     return ListView.builder(
       itemCount: exp.length,
       itemBuilder: (BuildContext context, int index) {
         String name = exp[index].title;
         String amount = exp[index].amount.toString();
+        double t = 10, b = 10, l = 10, r = 10;
         if (name == "") name = "No title";
+        if (index == 0) t = 30;
         return Card(
           elevation: 10,
-          margin: EdgeInsets.all(10),
+          margin: EdgeInsets.fromLTRB(l, t, r, b),
           color: Theme.of(context).primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),

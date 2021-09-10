@@ -31,6 +31,7 @@ class _AskWhoPaidAmountState extends State<AskWhoPaidAmount> {
         ),
       ),
       content: TextField(
+        keyboardType: TextInputType.number,
         onChanged: (String value) {
           this.amount = value;
         },

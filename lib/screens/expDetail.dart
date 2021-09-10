@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bill1/globals.dart';
 import 'package:bill1/main.dart';
 import 'package:bill1/models/group.dart';
@@ -52,16 +54,29 @@ class _ExpDetailBodyState extends State<ExpDetailBody> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 30),
-          Text(
-            cExp.amount.toString(),
-            style: Globals.numHeadingTextStyle,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Expense = ",
+                style: Globals.bodyLargeTextStyle.copyWith(fontSize: 35),
+              ),
+              Text(
+                cExp.amount.toString(),
+                style: Globals.numHeadingTextStyle,
+              ),
+            ],
           ),
           SizedBox(height: 20),
           Expanded(
-            child: ListView.separated(
+            child: ListView.builder(
               itemCount: indices.length,
               itemBuilder: (BuildContext context, int index) {
                 Contacts con = cGrp.grpContacts[indices[index]];
+                MaterialColor netAmountColor = Colors.teal;
+                double netAmount = cExp.whoPaid[indices[index]] -
+                    cExp.whoBought[indices[index]];
+                if (netAmount < 0) netAmountColor = Colors.red;
                 return Card(
                   elevation: 2,
                   margin: EdgeInsets.all(15),
@@ -74,9 +89,34 @@ class _ExpDetailBodyState extends State<ExpDetailBody> {
                   ),
                   shadowColor: Theme.of(context).primaryColor,
                   child: ListTile(
+                    leading: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "${con.name[0]}",
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        shape: CircleBorder(),
+                        backgroundColor:
+                            Colors.primaries[Random().nextInt(index + 5)],
+                        padding: EdgeInsets.all(10),
+                      ),
+                    ),
                     title: Text(
                       "${con.name}",
                       style: Globals.st,
+                    ),
+                    subtitle: Text(
+                      netAmount.toStringAsFixed(2),
+                      style: TextStyle(
+                        color: netAmountColor,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     trailing: Column(
                       children: [
@@ -92,9 +132,6 @@ class _ExpDetailBodyState extends State<ExpDetailBody> {
                     ),
                   ),
                 );
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return Divider();
               },
             ),
           ),
