@@ -107,6 +107,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
           ScaffoldMessenger.of(context).showSnackBar(e);
           return;
         }
+
         amount = double.parse(_amount.text);
         double leftPaidAmount = amount - whoPaidVal;
         if (leftPaidAmount < 0) {
@@ -136,7 +137,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         }
 
         context.read<Glist>().addWhoPaid(infPaid, leftPaidAmount);
-        if (whoBoughtVal == 0) {
+        if (whoBoughtVal == 0 && infBought == -1) {
           double tempVal = amount / cGrp.grpContacts.length;
           for (int i = 0; i < cGrp.grpContacts.length; i++) {
             context.read<Glist>().addWhoBought(i, tempVal);
@@ -282,7 +283,9 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       );
     }
     print(indices.length.toString());
-    var cList = Expanded(
+    var cList = Container(
+      height: MediaQuery.of(context).size.height / 4,
+      width: MediaQuery.of(context).size.width,
       child: ListView.builder(
         shrinkWrap: true,
         itemCount: indices.length,

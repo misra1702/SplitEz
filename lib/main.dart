@@ -77,10 +77,12 @@ class Glist extends ChangeNotifier {
   void openGrp(String grpName) {
     cGrp = box.get(grpName)!;
     print("cGrp is set to " + cGrp.grpName);
+    notifyListeners();
   }
 
   void cGrpName(String grpName) {
     cGrp = Group(grpName: grpName);
+    notifyListeners();
   }
 
   void addGrp(Group grp) {
@@ -122,6 +124,7 @@ class Glist extends ChangeNotifier {
   void setExpense(Expenses exp) {
     print("Setting cExp to ${exp.title} and amount ${exp.amount}");
     cExp = exp;
+    notifyListeners();
   }
 
   void openNewExpense() {
@@ -130,12 +133,14 @@ class Glist extends ChangeNotifier {
     cExp.whoBought = List<double>.filled(length, 0);
     cExp.whoPaid = List<double>.filled(length, 0);
     print('cExp of size ' + cGrp.grpContacts.length.toString() + "is created");
+    notifyListeners();
   }
 
   //Expense functions here
   void setAmount(double amount) {
     cExp.amount = amount;
     print("setting expense amount: " + cExp.amount.toString());
+    notifyListeners();
   }
 
   void setExpenseTitle(String title) {
