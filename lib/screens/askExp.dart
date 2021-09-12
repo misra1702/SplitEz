@@ -282,10 +282,9 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       );
     }
     print(indices.length.toString());
-    var cList = Container(
-      height: MediaQuery.of(context).size.height / 4,
-      width: MediaQuery.of(context).size.width,
+    var cList = Expanded(
       child: ListView.builder(
+        shrinkWrap: true,
         itemCount: indices.length,
         itemBuilder: (context, index) {
           String name = cGrp.grpContacts[indices[index]].name;
