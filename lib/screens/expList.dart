@@ -1,5 +1,5 @@
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,10 +14,8 @@ class ExpList extends StatefulWidget {
 class _ExpListState extends State<ExpList> {
   @override
   Widget build(BuildContext context) {
-    final String grpName = ModalRoute.of(context)?.settings.arguments as String;
-    print("Inside expList : Arguemnet provided :" + grpName);
-    context.read<Glist>().openGrp(grpName);
-    Group cGrp = context.watch<Glist>().cGrp;
+    Group cGrp = context.watch<CNGroup>().cGrp;
+    print("Inside expList and grpName is : ${cGrp.grpName}");
 
     return Scaffold(
       appBar: AppBar(
@@ -42,7 +40,8 @@ class _ExpListState extends State<ExpList> {
               size: Globals.appBarIconSize,
             ),
             onPressed: () {
-              Navigator.of(context).pushNamed('/grpInfo', arguments: grpName);
+              Navigator.of(context)
+                  .pushNamed('/grpInfo', arguments: cGrp.grpName);
             },
           ),
         ],
@@ -50,7 +49,7 @@ class _ExpListState extends State<ExpList> {
       body: ExpListBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.read<Glist>().openNewExpense();
+          context.read<CNGroup>().openNewExpense();
           Navigator.of(context).pushNamed('/askExp');
         },
         child: Icon(
@@ -70,7 +69,7 @@ class ExpListBody extends StatefulWidget {
 class _ExpListBodyState extends State<ExpListBody> {
   @override
   Widget build(BuildContext context) {
-    List<Expenses> exp = context.watch<Glist>().cGrp.expense;
+    var exp = context.watch<CNGroup>().cGrp.grpExpenses.entries.toList();
 
     if (exp.isEmpty) {
       return Center(
@@ -78,11 +77,13 @@ class _ExpListBodyState extends State<ExpListBody> {
       );
     }
     print("Expenses length is:" + exp.length.toString());
+
     return ListView.builder(
       itemCount: exp.length,
       itemBuilder: (BuildContext context, int index) {
-        String name = exp[index].title;
-        String amount = exp[index].amount.toString();
+        int id = exp[index].key;
+        String name = exp[index].value.title;
+        String amount = exp[index].value.amount.toString();
         double t = 10, b = 10, l = 10, r = 10;
         if (name == "") name = "No title";
         if (index == 0) t = 30;
@@ -100,7 +101,7 @@ class _ExpListBodyState extends State<ExpListBody> {
           shadowColor: Theme.of(context).primaryColor,
           child: ListTile(
             onTap: () {
-              context.read<Glist>().setExpense(exp[index]);
+              context.read<CNGroup>().setcExp(exp[index].value);
               Navigator.of(context).pushNamed('/expDetail');
             },
             title: Text(
@@ -120,7 +121,7 @@ class _ExpListBodyState extends State<ExpListBody> {
                 size: Globals.appBarIconSize,
               ),
               onPressed: () {
-                context.read<Glist>().delExpense(index);
+                context.read<CNGroup>().delExpense(id);
               },
             ),
           ),

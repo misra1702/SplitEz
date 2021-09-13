@@ -1,5 +1,5 @@
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,32 +29,7 @@ class _AskGrpNameState extends State<AskGrpName> {
           ),
         ),
       ),
-      content: TextField(
-        controller: _grpName,
-        cursorColor: Colors.white,
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.white,
-              width: 2,
-              style: BorderStyle.solid,
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.white,
-              width: 2,
-              style: BorderStyle.solid,
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        style: GoogleFonts.kreon(
-          color: Colors.white,
-          fontSize: 25,
-        ),
-      ),
+      content: GrpNameTextField(grpName: _grpName),
       backgroundColor: Theme.of(context).primaryColor,
       actions: [
         Center(
@@ -84,7 +59,7 @@ class _AskGrpNameState extends State<AskGrpName> {
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
               }
-              context.read<Glist>().cGrpName(_grpName.text);
+              context.read<CNGroup>().cGrpName(_grpName.text);
               Navigator.of(context).pushNamed('/grpCreate');
             },
             child: Text(
@@ -98,6 +73,46 @@ class _AskGrpNameState extends State<AskGrpName> {
         ),
       ],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    );
+  }
+}
+
+class GrpNameTextField extends StatelessWidget {
+  const GrpNameTextField({
+    Key? key,
+    required TextEditingController grpName,
+  })  : _grpName = grpName,
+        super(key: key);
+
+  final TextEditingController _grpName;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _grpName,
+      cursorColor: Colors.white,
+      decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+            width: 2,
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+            width: 2,
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+      style: GoogleFonts.kreon(
+        color: Colors.white,
+        fontSize: 25,
+      ),
     );
   }
 }

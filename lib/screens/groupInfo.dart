@@ -1,6 +1,4 @@
-import 'dart:math';
-
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/globals.dart';
@@ -16,10 +14,8 @@ class GrpInfo extends StatefulWidget {
 class _GrpInfoState extends State<GrpInfo> {
   @override
   Widget build(BuildContext context) {
-    print("Inside groupInfo");
-    final String grpName = ModalRoute.of(context)?.settings.arguments as String;
-    context.read<Glist>().openGrp(grpName);
-    Group cGrp = context.watch<Glist>().cGrp;
+    Group cGrp = context.watch<CNGroup>().cGrp;
+    print("Inside groupInfo and grpName is ${cGrp.grpName}");
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -54,29 +50,33 @@ class GrpInfoBody extends StatefulWidget {
 }
 
 class _GrpInfoBodyState extends State<GrpInfoBody> {
-  List<double> whoPaid = [];
-  List<double> whoBought = [];
+  Map<int, double> whoPaid = {};
+  Map<int, double> whoBought = {};
   double totalExp = 0;
 
   void func(Group grp) {
-    int cnt = grp.expense.length;
-    int n = grp.grpContacts.length;
+    int expLen = grp.grpExpenses.length;
+    var expList = grp.grpExpenses.values.toList();
+    var contactId = grp.grpContacts.keys.toList();
+    int conLen = grp.grpContacts.length;
     totalExp = 0;
-    whoPaid = List<double>.filled(n, 0);
-    whoBought = List<double>.filled(n, 0);
-    for (int i = 0; i < cnt; i++) {
-      for (int j = 0; j < n; j++) {
-        whoPaid[j] += grp.expense[i].whoPaid[j];
-        totalExp += grp.expense[i].whoPaid[j];
-        whoBought[j] += grp.expense[i].whoBought[j];
+    whoPaid.clear();
+    whoBought.clear();
+    print("Expenses count is $expLen and contact count is $conLen");
+    for (int i = 0; i < conLen; i++) {
+      int id = contactId[i];
+      for (int j = 0; j < expLen; j++) {
+        whoPaid[id] = (whoPaid[id] ?? 0) + (expList[j].whoPaid[id] ?? 0);
+        whoBought[id] = (whoBought[id] ?? 0) + (expList[j].whoBought[id] ?? 0);
       }
+      totalExp += (whoPaid[id] ?? 0);
     }
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    Group cGrp = context.watch<Glist>().cGrp;
+    Group cGrp = context.watch<CNGroup>().cGrp;
+    var contactId = cGrp.grpContacts.keys.toList();
     func(cGrp);
     return Center(
       child: Column(
@@ -103,10 +103,17 @@ class _GrpInfoBodyState extends State<GrpInfoBody> {
             child: ListView.builder(
               itemCount: cGrp.grpContacts.length,
               itemBuilder: (BuildContext context, int index) {
+                int id = contactId[index];
+                Contacts con = cGrp.grpContacts[id]!;
+                double whoPaidAmount = whoPaid[id] ?? 0;
+                double whoBoughtAmount = whoBought[id] ?? 0;
                 MaterialColor netAmountColor = Colors.teal;
-                double netAmount = whoPaid[index] - whoBought[index];
+                double netAmount = whoPaidAmount - whoBoughtAmount;
+                int colorId = (id * 17) % Colors.primaries.length;
+
+                print("Name ${con.name} and amount $netAmount");
+
                 if (netAmount < 0) netAmountColor = Colors.red;
-                Contacts con = cGrp.grpContacts[index];
                 return Card(
                   elevation: 2,
                   margin: EdgeInsets.all(15),
@@ -143,19 +150,18 @@ class _GrpInfoBodyState extends State<GrpInfoBody> {
                       ),
                       style: TextButton.styleFrom(
                         shape: CircleBorder(),
-                        backgroundColor:
-                            Colors.primaries[Random().nextInt(index + 5)],
+                        backgroundColor: Colors.primaries[colorId],
                         padding: EdgeInsets.all(10),
                       ),
                     ),
                     trailing: Column(
                       children: [
                         Text(
-                          whoPaid[index].toStringAsFixed(2),
+                          whoPaidAmount.toStringAsFixed(2),
                           style: Globals.numPaidTextStyle,
                         ),
                         Text(
-                          whoBought[index].toStringAsFixed(2),
+                          whoBoughtAmount.toStringAsFixed(2),
                           style: Globals.numBoughtTextStyle,
                         ),
                       ],

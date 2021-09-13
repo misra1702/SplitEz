@@ -1,5 +1,5 @@
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -73,7 +73,7 @@ class _AskNameState extends State<AskName> {
                 return;
               }
               Contacts nCon = Contacts(name: this._name.text);
-              context.read<Glist>().addContact = (nCon);
+              context.read<CNGroup>().addContact(nCon);
               print("Done adding to cGrp");
               Navigator.of(context).pushNamed('/grpCreate');
             },

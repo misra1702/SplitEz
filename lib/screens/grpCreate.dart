@@ -1,4 +1,4 @@
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:bill1/widgets/askName.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +17,8 @@ class GrpCreate extends StatefulWidget {
 class _GrpCreateState extends State<GrpCreate> {
   @override
   Widget build(BuildContext context) {
-    Group cGrp = context.watch<Glist>().cGrp;
-    print("Inside grpCreate");
-    print("Grpname : $cGrp.grpName");
+    Group cGrp = context.watch<CNGroup>().cGrp;
+    print("Inside grpCreate and Grpname is: ${cGrp.grpName}");
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -44,8 +43,9 @@ class _GrpCreateState extends State<GrpCreate> {
       body: GrpCreateBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.read<Glist>().addGrp(cGrp);
-          Navigator.of(context).pushNamed('/expList', arguments: cGrp.grpName);
+          context.read<CNGroup>().addGrp(cGrp);
+          context.read<CNGroup>().openGrp(cGrp.grpName);
+          Navigator.of(context).pushNamed('/expList');
         },
         child: Icon(
           Icons.check,
@@ -88,24 +88,22 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
     if (a == null) {
       return;
     } else {
-      String name = (a.name?.firstName ?? "") +
-          (a.name?.middleName ?? "") +
-          (a.name?.lastName ?? " ");
+      String name = (a.name?.firstName ?? "") + (a.name?.lastName ?? "");
       String? phoneNum = a.phones[0].number;
       Contacts nCon = Contacts(name: name, phone: phoneNum);
-      for (int i = 0; i < cGrp.grpContacts.length; i++) {
-        if (cGrp.grpContacts[i].name == name) {
-          return;
-        }
+      if (cGrp.grpContacts.values.contains(name)) {
+        print("Contact already in cGrp");
+        return;
       }
-      context.read<Glist>().addContact = (nCon);
-      print("Done adding to cGrp");
+      context.read<CNGroup>().addContact(nCon);
+      print("Contact $name added to cGrp");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    cGrp = context.watch<Glist>().cGrp;
+    cGrp = context.watch<CNGroup>().cGrp;
+    var cConList = cGrp.grpContacts.entries.toList();
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -148,31 +146,37 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
             child: ListView.separated(
               itemCount: cGrp.grpContacts.length,
               itemBuilder: (BuildContext context, int index) {
-                Contacts con = cGrp.grpContacts[index];
+                int id = cConList[index].key;
+                Contacts contact = cConList[index].value;
+                int colorId = (id * 17) % Colors.primaries.length;
                 return Card(
                   child: ListTile(
                     key: UniqueKey(),
                     title: Text(
-                      "${con.name}",
+                      "${contact.name}",
                       style: Globals.st,
                     ),
-                    subtitle: Text("${con.phoneNum}"),
+                    subtitle: Text("${contact.phoneNum}"),
                     leading: TextButton(
                       onPressed: () {},
                       child: Text(
-                        "${con.name[0]}",
+                        "${contact.name[0]}",
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      style: Globals.btnstGrpList,
+                      style: TextButton.styleFrom(
+                        shape: CircleBorder(),
+                        backgroundColor: Colors.primaries[colorId],
+                        padding: EdgeInsets.all(10),
+                      ),
                     ),
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
-                        context.read<Glist>().deleteContact = (con);
+                        context.read<CNGroup>().deleteContact(id);
                       },
                     ),
                   ),

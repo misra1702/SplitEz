@@ -1,5 +1,5 @@
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:bill1/widgets/askGroupDelete.dart';
 import 'package:bill1/widgets/askGrpName.dart';
@@ -45,7 +45,7 @@ class _GrpListState extends State<GrpList> {
   @override
   Widget build(BuildContext context) {
     print("Inside grpList");
-    return new Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text(
           "Bill Splitter",
@@ -55,6 +55,7 @@ class _GrpListState extends State<GrpList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          context.read<CNGroup>().openNewGroup();
           showDialog(
             context: context,
             builder: (context) {
@@ -82,7 +83,7 @@ class GrpListBody extends StatefulWidget {
 class _GrpListBodyState extends State<GrpListBody> {
   @override
   Widget build(BuildContext context) {
-    var box = context.watch<Glist>().box;
+    var box = context.watch<CNGroup>().box;
     if (box.isEmpty) {
       return Center(
         child: Column(
@@ -136,8 +137,8 @@ class _GrpListBodyState extends State<GrpListBody> {
               ),
             ),
             onTap: () {
-              Navigator.of(context)
-                  .pushNamed('/expList', arguments: grp.grpName);
+              context.read<CNGroup>().openGrp(grp.grpName);
+              Navigator.of(context).pushNamed('/expList');
             },
             trailing: IconButton(
               onPressed: () {

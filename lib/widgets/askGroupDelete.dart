@@ -1,5 +1,5 @@
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +28,7 @@ class AskGroupDelete extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () {
-                context.read<Glist>().deleteGrp(name);
+                context.read<CNGroup>().deleteGrp(name);
                 Navigator.of(context).pop();
               },
               icon: Icon(
@@ -39,7 +39,6 @@ class AskGroupDelete extends StatelessWidget {
             ),
             IconButton(
               onPressed: () {
-                // context.read<Glist>().deleteGrp(name);
                 Navigator.of(context).pop();
               },
               icon: Icon(

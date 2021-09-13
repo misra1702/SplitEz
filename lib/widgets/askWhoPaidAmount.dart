@@ -1,5 +1,5 @@
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -88,12 +88,12 @@ class _AskWhoPaidAmountState extends State<AskWhoPaidAmount> {
                 ScaffoldMessenger.of(context).showSnackBar(e);
                 return;
               }
-              context.read<Glist>().addWhoPaid(
+              context.read<CNGroup>().addWhoPaid(
                     widget.index,
                     double.parse(amount),
                   );
               print(widget.index.toString() + " " + amount);
-              print(context.read<Glist>().cExp.whoPaid.length);
+              print(context.read<CNGroup>().cExp.whoPaid.length);
               Navigator.pop(context);
               return;
             },

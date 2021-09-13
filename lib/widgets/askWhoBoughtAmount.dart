@@ -1,5 +1,5 @@
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -90,7 +90,7 @@ class _AskWhoBoughtAmountState extends State<AskWhoBoughtAmount> {
                 return;
               }
               context
-                  .read<Glist>()
+                  .read<CNGroup>()
                   .addWhoBought(widget.index, double.parse(amount));
               Navigator.pop(context);
               return;

@@ -1,5 +1,5 @@
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:bill1/widgets/askWhoBoughtAmount.dart';
 import 'package:bill1/widgets/askWhoPaidAmount.dart';
@@ -49,12 +49,14 @@ class ExpensesBody extends StatefulWidget {
 }
 
 class _ExpensesBodyState extends State<ExpensesBody> {
-  TextEditingController _title = TextEditingController();
-  TextEditingController _amount = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    Expenses cExp = context.watch<Glist>().cExp;
-    Group cGrp = context.watch<Glist>().cGrp;
+    Expenses cExp = context.watch<CNGroup>().cExp;
+    Group cGrp = context.watch<CNGroup>().cGrp;
+    var contactId = cGrp.grpContacts.keys.toList();
+    print("Inside askExp and grpName is ${cGrp.grpName}");
 
     return ListView(
       padding: EdgeInsets.all(20),
@@ -63,93 +65,20 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         SizedBox(height: 20),
         amountExp(context),
         SizedBox(height: 20),
-        whoPaid(context, cExp, cGrp),
+        WhoPaidList(
+            context: context, cExp: cExp, cGrp: cGrp, contactId: contactId),
         SizedBox(height: 20),
-        whoBought(context, cExp, cGrp),
+        WhoBoughtList(
+            context: context, cExp: cExp, cGrp: cGrp, contactId: contactId),
         SizedBox(height: 30),
-        submitButton(cGrp, cExp, context),
+        SubmitButton(
+            amountController: amountController,
+            titleController: titleController,
+            cGrp: cGrp,
+            cExp: cExp,
+            context: context,
+            contactId: contactId),
       ],
-    );
-  }
-
-  ElevatedButton submitButton(Group cGrp, Expenses cExp, BuildContext context) {
-    return ElevatedButton(
-      child: Text(
-        "Submit",
-        style: GoogleFonts.kreon(fontSize: 30),
-      ),
-      style: Globals.btnst,
-      onPressed: () {
-        String st = "";
-        double whoPaidVal = 0;
-        double whoBoughtVal = 0;
-        int infPaid = -1;
-        int infBought = -1;
-        double amount = 0;
-        for (int i = 0; i < cGrp.grpContacts.length; i++) {
-          if (cExp.whoPaid[i] != double.infinity) {
-            whoPaidVal += cExp.whoPaid[i];
-          } else
-            infPaid = i;
-          if (cExp.whoBought[i] != double.infinity) {
-            whoBoughtVal += cExp.whoBought[i];
-          } else
-            infBought = i;
-        }
-        if (double.tryParse(_amount.text) == null) {
-          st = "Enter valid amount";
-        } else if (double.parse(_amount.text) == 0) {
-          st = "Amount cann't be 0";
-        }
-        if (st != "") {
-          SnackBar e = SnackBar(content: Text(st));
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(e);
-          return;
-        }
-
-        amount = double.parse(_amount.text);
-        double leftPaidAmount = amount - whoPaidVal;
-        if (leftPaidAmount < 0) {
-          st = "Paid value can't be greater than total amount";
-        } else if (leftPaidAmount > 0 && infPaid == -1) {
-          st = "Total amount can't be greater than paid value";
-        }
-        if (st != "") {
-          SnackBar e = SnackBar(content: Text(st));
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(e);
-          return;
-        }
-        double leftBoughtAmount = amount - whoBoughtVal;
-        if (leftBoughtAmount < 0) {
-          st = "Bought value can't be greater than total amount";
-        } else if (leftBoughtAmount > 0 &&
-            infBought == -1 &&
-            whoBoughtVal != 0) {
-          st = "Total amount can't be greater than bought value";
-        }
-        if (st != "") {
-          SnackBar e = SnackBar(content: Text(st));
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(e);
-          return;
-        }
-
-        context.read<Glist>().addWhoPaid(infPaid, leftPaidAmount);
-        if (whoBoughtVal == 0 && infBought == -1) {
-          double tempVal = amount / cGrp.grpContacts.length;
-          for (int i = 0; i < cGrp.grpContacts.length; i++) {
-            context.read<Glist>().addWhoBought(i, tempVal);
-          }
-        } else {
-          context.read<Glist>().addWhoBought(infBought, leftBoughtAmount);
-        }
-        context.read<Glist>().setAmount(amount);
-        context.read<Glist>().setExpenseTitle(_title.text);
-        context.read<Glist>().addExpense();
-        Navigator.of(context).pop();
-      },
     );
   }
 
@@ -157,7 +86,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
     return TextField(
       key: GlobalKey(),
       maxLength: Globals.textFieldLength,
-      controller: _amount,
+      controller: amountController,
       autocorrect: false,
       cursorColor: Theme.of(context).primaryColor,
       style: Globals.textFieldStyle,
@@ -187,7 +116,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
 
   TextField titleExp() {
     return TextField(
-      controller: _title,
+      controller: titleController,
       key: GlobalKey(),
       autocorrect: false,
       cursorColor: Colors.teal,
@@ -217,64 +146,186 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       textAlign: TextAlign.center,
     );
   }
+}
 
-  Widget whoPaid(BuildContext context, Expenses cExp, Group cGrp) {
-    List<int> indices = [];
-    for (int i = 0; i < cExp.whoPaid.length; i++) {
-      if (cExp.whoPaid[i] > 0) indices.add(i);
-    }
+class SubmitButton extends StatelessWidget {
+  const SubmitButton({
+    Key? key,
+    required this.amountController,
+    required this.titleController,
+    required this.cGrp,
+    required this.cExp,
+    required this.context,
+    required this.contactId,
+  }) : super(key: key);
+
+  final TextEditingController amountController;
+  final TextEditingController titleController;
+  final Group cGrp;
+  final Expenses cExp;
+  final BuildContext context;
+  final List<int> contactId;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      child: Text(
+        "Submit",
+        style: GoogleFonts.kreon(fontSize: 30),
+      ),
+      style: Globals.btnst,
+      onPressed: () {
+        String st = "";
+        double whoPaidVal = 0;
+        double whoBoughtVal = 0;
+        int infPaid = -1;
+        int infBought = -1;
+        double amount = 0;
+        var contactId = cGrp.grpContacts.keys.toList();
+        for (int i = 0; i < cGrp.grpContacts.length; i++) {
+          int id = contactId[i];
+          if (cExp.whoPaid[i] != double.infinity) {
+            whoPaidVal += cExp.whoPaid[i] ?? 0;
+          } else
+            infPaid = id;
+          if (cExp.whoBought[i] != double.infinity) {
+            whoBoughtVal += cExp.whoBought[id] ?? 0;
+          } else
+            infBought = id;
+        }
+        if (double.tryParse(amountController.text) == null) {
+          st = "Enter valid amount";
+        } else if (double.parse(amountController.text) == 0) {
+          st = "Amount cann't be 0";
+        }
+        if (st != "") {
+          SnackBar e = SnackBar(content: Text(st));
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(e);
+          return;
+        }
+
+        amount = double.parse(amountController.text);
+        double leftPaidAmount = amount - whoPaidVal;
+        if (leftPaidAmount < 0) {
+          st = "Paid value can't be greater than total amount";
+        } else if (leftPaidAmount > 0 && infPaid == -1) {
+          st = "Total amount can't be greater than paid value";
+        }
+        if (st != "") {
+          SnackBar e = SnackBar(content: Text(st));
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(e);
+          return;
+        }
+        double leftBoughtAmount = amount - whoBoughtVal;
+        if (leftBoughtAmount < 0) {
+          st = "Bought value can't be greater than total amount";
+        } else if (leftBoughtAmount > 0 &&
+            infBought == -1 &&
+            whoBoughtVal != 0) {
+          st = "Total amount can't be greater than bought value";
+        }
+        if (st != "") {
+          SnackBar e = SnackBar(content: Text(st));
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(e);
+          return;
+        }
+        if (infPaid != -1) {
+          context.read<CNGroup>().addWhoPaid(infPaid, leftPaidAmount);
+        }
+        if (infBought != -1) {
+          context.read<CNGroup>().addWhoBought(infBought, leftBoughtAmount);
+        } else if (whoBoughtVal == 0) {
+          double tempVal = amount / cGrp.grpContacts.length;
+          for (int i = 0; i < cGrp.grpContacts.length; i++) {
+            int id = contactId[i];
+            context.read<CNGroup>().addWhoBought(id, tempVal);
+          }
+        }
+        context.read<CNGroup>().setAmount(amount);
+        context.read<CNGroup>().setExpenseTitle(titleController.text);
+        context.read<CNGroup>().addExpense(cExp);
+        Navigator.of(context).pop();
+      },
+    );
+  }
+}
+
+class WhoPaidList extends StatefulWidget {
+  const WhoPaidList({
+    Key? key,
+    required this.context,
+    required this.cExp,
+    required this.cGrp,
+    required this.contactId,
+  }) : super(key: key);
+
+  final BuildContext context;
+  final Expenses cExp;
+  final Group cGrp;
+  final List<int> contactId;
+
+  @override
+  _WhoPaidListState createState() => _WhoPaidListState();
+}
+
+class _WhoPaidListState extends State<WhoPaidList> {
+  @override
+  Widget build(BuildContext context) {
+    var indices = widget.cExp.whoPaid.keys.toList();
+    print(indices);
+    print("whoPaidList length is ${indices.length}");
     var txt = Text(
       "Who Paid ?",
       style: Globals.bodyLargeTextStyle,
     );
     var popUp = PopupMenuButton(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          shape: BoxShape.circle,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+            size: Globals.appBarIconSize,
+          ),
         ),
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-          size: Globals.appBarIconSize,
+        offset: Offset(100, 20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-      ),
-      offset: Offset(100, 20),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      onSelected: (Contacts a) {
-        int index = cGrp.grpContacts.indexOf(a);
-        if (indices.length == 0) {
-          context.read<Glist>().addWhoPaid(index, double.infinity);
-          return;
-        }
-        showDialog(
+        onSelected: (int id) {
+          if (indices.length == 0) {
+            context.read<CNGroup>().addWhoPaid(id, double.infinity);
+            return;
+          }
+          showDialog(
             context: context,
             builder: (context) {
               return AskWhoPaidAmount(
-                index: index,
+                index: id,
               );
-            });
-      },
-      onCanceled: () {
-        print("Selecting who paid cancelled\n");
-      },
-      color: Colors.teal,
-      itemBuilder: (context) {
-        return cGrp.grpContacts.map(
-          (e) {
+            },
+          );
+        },
+        onCanceled: () {
+          print("Selecting who paid cancelled\n");
+        },
+        color: Colors.teal,
+        itemBuilder: (context) {
+          return widget.cGrp.grpContacts.entries.toList().map((e) {
             return PopupMenuItem(
-              child: Text(e.name),
+              child: Text(e.value.name),
               textStyle: GoogleFonts.kreon(
                 fontSize: 22,
               ),
-              value: e,
+              value: e.key,
             );
-          },
-        ).toList();
-      },
-    );
+          }).toList();
+        });
 
     if (indices.length == 0) {
       return Row(
@@ -282,7 +333,6 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         children: [txt, SizedBox(width: 30), popUp],
       );
     }
-    print(indices.length.toString());
     var cList = Container(
       height: MediaQuery.of(context).size.height / 4,
       width: MediaQuery.of(context).size.width,
@@ -290,8 +340,8 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         shrinkWrap: true,
         itemCount: indices.length,
         itemBuilder: (context, index) {
-          String name = cGrp.grpContacts[indices[index]].name;
-          double temp = cExp.whoPaid[indices[index]];
+          String name = widget.cGrp.grpContacts[indices[index]]?.name ?? "";
+          double temp = widget.cExp.whoPaid[indices[index]] ?? 0;
           String amount = temp.toString();
           if (temp == double.infinity) {
             amount = "Left Amount";
@@ -324,7 +374,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
                 trailing: IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
-                    context.read<Glist>().deleteWhoPaid(indices[index]);
+                    context.read<CNGroup>().deleteWhoPaid(indices[index]);
                   },
                 ),
               ),
@@ -344,11 +394,34 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       ],
     );
   }
+}
 
-  Widget whoBought(BuildContext context, Expenses cExp, Group cGrp) {
+class WhoBoughtList extends StatefulWidget {
+  const WhoBoughtList({
+    Key? key,
+    required this.context,
+    required this.cExp,
+    required this.cGrp,
+    required this.contactId,
+  }) : super(key: key);
+
+  final BuildContext context;
+  final Expenses cExp;
+  final Group cGrp;
+  final List<int> contactId;
+
+  @override
+  _WhoBoughtListState createState() => _WhoBoughtListState();
+}
+
+class _WhoBoughtListState extends State<WhoBoughtList> {
+  @override
+  Widget build(BuildContext context) {
     List<int> indices = [];
-    for (int i = 0; i < cGrp.grpContacts.length; i++) {
-      if (cExp.whoBought[i] > 0) indices.add(i);
+    for (int i = 0; i < widget.cGrp.grpContacts.length; i++) {
+      int id = widget.contactId[i];
+      double val = widget.cExp.whoBought[id] ?? 0;
+      if (val > 0) indices.add(id);
     }
     var txt = Text(
       "Who Bought?",
@@ -374,10 +447,9 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      onSelected: (Contacts a) {
-        int index = cGrp.grpContacts.indexOf(a);
+      onSelected: (int index) {
         if (indices.length == 0) {
-          context.read<Glist>().addWhoBought(index, double.infinity);
+          context.read<CNGroup>().addWhoBought(index, double.infinity);
           return;
         }
         showDialog(
@@ -394,14 +466,14 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       },
       color: Colors.teal,
       itemBuilder: (context) {
-        return cGrp.grpContacts.map(
+        return widget.cGrp.grpContacts.entries.map(
           (e) {
             return PopupMenuItem(
-              child: Text(e.name),
+              child: Text(e.value.name),
               textStyle: GoogleFonts.kreon(
                 fontSize: 22,
               ),
-              value: e,
+              value: e.key,
             );
           },
         ).toList();
@@ -420,8 +492,8 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       child: ListView.builder(
         itemCount: indices.length,
         itemBuilder: (context, index) {
-          String name = cGrp.grpContacts[indices[index]].name;
-          double temp = cExp.whoBought[indices[index]];
+          String name = widget.cGrp.grpContacts[indices[index]]?.name ?? "";
+          double temp = widget.cExp.whoBought[indices[index]] ?? 0;
           String amount = temp.toString();
           if (temp == double.infinity) {
             amount = "Left amount";
@@ -450,7 +522,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
               trailing: IconButton(
                 icon: Icon(Icons.delete),
                 onPressed: () {
-                  context.read<Glist>().deleteWhoBought(indices[index]);
+                  context.read<CNGroup>().deleteWhoBought(indices[index]);
                 },
               ),
             ),

@@ -1,7 +1,5 @@
-import 'dart:math';
-
 import 'package:bill1/globals.dart';
-import 'package:bill1/main.dart';
+import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +15,7 @@ class _ExpDetailState extends State<ExpDetail> {
   @override
   Widget build(BuildContext context) {
     print("Inside ExpDetail");
-    String name = context.read<Glist>().cExp.title;
+    String name = context.read<CNGroup>().cExp.title;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -41,14 +39,15 @@ class ExpDetailBody extends StatefulWidget {
 class _ExpDetailBodyState extends State<ExpDetailBody> {
   @override
   Widget build(BuildContext context) {
-    Expenses cExp = context.read<Glist>().cExp;
-    Group cGrp = context.read<Glist>().cGrp;
-    List<int> indices = [];
-    for (int i = 0; i < cGrp.grpContacts.length; i++) {
-      if (cExp.whoPaid[i] > 0 || cExp.whoBought[i] > 0) {
-        indices.add(i);
-      }
-    }
+    Expenses cExp = context.read<CNGroup>().cExp;
+    Group cGrp = context.read<CNGroup>().cGrp;
+    List<int> idVal = [];
+    var temp = cExp.whoPaid.keys.toSet();
+    temp.addAll(cExp.whoBought.keys);
+    idVal = temp.toList();
+    print(idVal);
+    var cList = cGrp.grpContacts.entries.toList();
+
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,12 +69,16 @@ class _ExpDetailBodyState extends State<ExpDetailBody> {
           SizedBox(height: 20),
           Expanded(
             child: ListView.builder(
-              itemCount: indices.length,
+              itemCount: idVal.length,
               itemBuilder: (BuildContext context, int index) {
-                Contacts con = cGrp.grpContacts[indices[index]];
+                int id = cList[idVal[index]].key;
+                Contacts con = cList[id].value;
+                double paidVal = cExp.whoPaid[id] ?? 0;
+                double boughtVal = cExp.whoBought[id] ?? 0;
+                int colorId = (id * 17) % Colors.primaries.length;
+
                 MaterialColor netAmountColor = Colors.teal;
-                double netAmount = cExp.whoPaid[indices[index]] -
-                    cExp.whoBought[indices[index]];
+                double netAmount = paidVal - boughtVal;
                 if (netAmount < 0) netAmountColor = Colors.red;
                 return Card(
                   elevation: 2,
@@ -101,8 +104,7 @@ class _ExpDetailBodyState extends State<ExpDetailBody> {
                       ),
                       style: TextButton.styleFrom(
                         shape: CircleBorder(),
-                        backgroundColor:
-                            Colors.primaries[Random().nextInt(index + 5)],
+                        backgroundColor: Colors.primaries[colorId],
                         padding: EdgeInsets.all(10),
                       ),
                     ),
@@ -121,11 +123,11 @@ class _ExpDetailBodyState extends State<ExpDetailBody> {
                     trailing: Column(
                       children: [
                         Text(
-                          cExp.whoPaid[indices[index]].toStringAsFixed(2),
+                          paidVal.toStringAsFixed(2),
                           style: Globals.numPaidTextStyle,
                         ),
                         Text(
-                          cExp.whoBought[indices[index]].toStringAsFixed(2),
+                          boughtVal.toStringAsFixed(2),
                           style: Globals.numBoughtTextStyle,
                         ),
                       ],
