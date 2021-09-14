@@ -18,43 +18,49 @@ class _ExpListState extends State<ExpList> {
     Group cGrp = context.watch<CNGroup>().cGrp;
     print("Inside expList and grpName is : ${cGrp.grpName}");
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            size: Globals.appBarIconSize,
-          ),
-          onPressed: () {
-            Navigator.popUntil(context, ModalRoute.withName('/grpList'));
-          },
-        ),
-        title: Text(
-          cGrp.grpName,
-          style: Globals.appBarTextStyle,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.popUntil(context, ModalRoute.withName('/grpList'));
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
             icon: Icon(
-              Icons.info_outline,
+              Icons.arrow_back,
               size: Globals.appBarIconSize,
             ),
             onPressed: () {
-              Navigator.of(context)
-                  .pushNamed('/grpInfo', arguments: cGrp.grpName);
+              Navigator.popUntil(context, ModalRoute.withName('/grpList'));
             },
           ),
-        ],
-      ),
-      body: ExpListBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.read<CNGroup>().openNewExpense();
-          Navigator.of(context).pushNamed('/askExp');
-        },
-        child: Icon(
-          Icons.add,
+          title: Text(
+            cGrp.grpName,
+            style: Globals.appBarTextStyle,
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.info_outline,
+                size: Globals.appBarIconSize,
+              ),
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed('/grpInfo', arguments: cGrp.grpName);
+              },
+            ),
+          ],
+        ),
+        body: ExpListBody(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.read<CNGroup>().openNewExpense();
+            Navigator.of(context).pushNamed('/askExp');
+          },
+          child: Icon(
+            Icons.add,
+          ),
         ),
       ),
     );

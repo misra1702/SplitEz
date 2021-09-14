@@ -7,6 +7,7 @@ import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ShowReceipt extends StatefulWidget {
   const ShowReceipt({Key? key}) : super(key: key);
@@ -20,7 +21,6 @@ class _ShowReceiptState extends State<ShowReceipt> {
   Widget build(BuildContext context) {
     Group cGrp = context.watch<CNGroup>().cGrp;
     print("Inside showReceipt and grpName is : ${cGrp.grpName}");
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -39,11 +39,15 @@ class _ShowReceiptState extends State<ShowReceipt> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.share,
-              size: Globals.appBarIconSize,
-            ),
-            onPressed: () {},
+            onPressed: () async {
+              File? pdf = context.read<CNGroup>().cPdf;
+              if (pdf == null) {
+                print("Receipt Not generated");
+                return;
+              }
+              Share.shareFiles([pdf.path]);
+            },
+            icon: Icon(Icons.share),
           ),
         ],
       ),
@@ -63,6 +67,7 @@ class _ShowReceiptBodyState extends State<ShowReceiptBody> {
   late Group grp;
   Future<Widget> func() async {
     File pdf = await PdfGen.generate(grp);
+    context.read<CNGroup>().setcPdf(pdf);
     print(pdf.path);
     final pdfController =
         PdfController(document: PdfDocument.openFile(pdf.path));

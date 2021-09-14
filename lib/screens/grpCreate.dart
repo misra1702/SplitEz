@@ -91,7 +91,8 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
       String name = (a.name?.firstName ?? "") + (a.name?.lastName ?? "");
       String? phoneNum = a.phones[0].number;
       Contacts nCon = Contacts(name: name, phone: phoneNum);
-      if (cGrp.grpContacts.values.contains(name)) {
+      var temp = cGrp.grpContacts.values.map((e) => e.name).toList();
+      if (temp.contains(name)) {
         print("Contact already in cGrp");
         return;
       }
@@ -148,7 +149,7 @@ class _GrpCreateBodyState extends State<GrpCreateBody> {
               itemBuilder: (BuildContext context, int index) {
                 int id = cConList[index].key;
                 Contacts contact = cConList[index].value;
-                int colorId = (id * 17) % Colors.primaries.length;
+                int colorId = (id * 1037) % Colors.primaries.length;
                 return Card(
                   child: ListTile(
                     key: UniqueKey(),

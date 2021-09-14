@@ -38,6 +38,7 @@ dependencies:
   pdf: ^3.5.0
   open_file: ^3.2.1
   native_pdf_view: ^4.1.0
+  share_plus: ^2.1.4
 
 dev_dependencies:
   build_runner: ^2.1.1

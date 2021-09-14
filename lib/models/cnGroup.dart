@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -6,6 +8,11 @@ class CNGroup extends ChangeNotifier {
   var box = Hive.box<Group>('GrpDb');
   Group cGrp = Group(grpName: "");
   Expenses cExp = Expenses();
+  File? cPdf;
+
+  void setcPdf(File pdf) {
+    cPdf = pdf;
+  }
 
   //Group Functions here
   void openGrp(String grpName) {
