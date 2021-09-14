@@ -4,6 +4,7 @@ import 'package:bill1/screens/askExp.dart';
 import 'package:bill1/screens/expDetail.dart';
 import 'package:bill1/screens/expList.dart';
 import 'package:bill1/screens/grpList.dart';
+import 'package:bill1/screens/showReceipt.dart';
 import 'package:bill1/themes/themeLight.dart';
 import 'package:flutter/material.dart';
 import 'package:bill1/screens/grpCreate.dart';
@@ -59,6 +60,9 @@ class MyApp extends StatelessWidget {
           },
           '/expDetail': (context) {
             return ExpDetail();
+          },
+          '/showReceipt': (context) {
+            return ShowReceipt();
           }
         },
         title: 'Bill App',

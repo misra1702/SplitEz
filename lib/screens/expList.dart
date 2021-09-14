@@ -2,6 +2,7 @@ import 'package:bill1/globals.dart';
 import 'package:bill1/models/cnGroup.dart';
 import 'package:bill1/models/group.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class ExpList extends StatefulWidget {
@@ -73,7 +74,16 @@ class _ExpListBodyState extends State<ExpListBody> {
 
     if (exp.isEmpty) {
       return Center(
-        child: Text("Click + to add new expense."),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "No Expense",
+              style: GoogleFonts.kreon(fontSize: 25),
+            ),
+            Text("Click + to add new expense.", style: GoogleFonts.kreon()),
+          ],
+        ),
       );
     }
     print("Expenses length is:" + exp.length.toString());

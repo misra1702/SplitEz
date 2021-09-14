@@ -171,6 +171,20 @@ class _GrpInfoBodyState extends State<GrpInfoBody> {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: ElevatedButton(
+              onPressed: () {
+                print("Tapped on Create Receipt");
+                Navigator.of(context).pushNamed('/showReceipt');
+              },
+              child: Text(
+                "Create Receipt",
+                style: Globals.appBarTextStyle,
+              ),
+              style: Globals.btnst,
+            ),
+          ),
         ],
       ),
     );
