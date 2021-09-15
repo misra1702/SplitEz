@@ -89,7 +89,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       controller: amountController,
       autocorrect: false,
       cursorColor: Theme.of(context).primaryColor,
-      style: Globals.textFieldStyle,
+      style: Globals.textFieldAskStyle,
       decoration: InputDecoration(
         labelText: 'Amount',
         focusedBorder: OutlineInputBorder(
@@ -120,9 +120,7 @@ class _ExpensesBodyState extends State<ExpensesBody> {
       key: GlobalKey(),
       autocorrect: false,
       cursorColor: Colors.teal,
-      style: GoogleFonts.kreon(
-        fontSize: 24,
-      ),
+      style: Globals.textFieldAskStyle,
       decoration: InputDecoration(
         labelText: 'Title',
         focusedBorder: OutlineInputBorder(

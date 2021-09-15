@@ -10,8 +10,8 @@ class Globals {
   static TextStyle textFieldLabelStyle = GoogleFonts.kreon(
     color: Colors.tealAccent,
   );
-  static TextStyle textFieldStyle = GoogleFonts.kreon(
-    fontSize: 24,
+  static TextStyle textFieldAskStyle = GoogleFonts.kreon(
+    fontSize: 18,
   );
   static TextStyle st = GoogleFonts.kreon(
     fontSize: 25,
