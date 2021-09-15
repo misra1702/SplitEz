@@ -59,11 +59,16 @@ class _ExpensesBodyState extends State<ExpensesBody> {
     print("Inside askExp and grpName is ${cGrp.grpName}");
 
     return ListView(
-      padding: EdgeInsets.all(20),
       children: [
-        titleExp(),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 5),
+          child: titleExp(),
+        ),
         SizedBox(height: 20),
-        amountExp(context),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
+          child: amountExp(context),
+        ),
         SizedBox(height: 20),
         WhoPaidList(
             context: context, cExp: cExp, cGrp: cGrp, contactId: contactId),
@@ -71,13 +76,16 @@ class _ExpensesBodyState extends State<ExpensesBody> {
         WhoBoughtList(
             context: context, cExp: cExp, cGrp: cGrp, contactId: contactId),
         SizedBox(height: 30),
-        SubmitButton(
-            amountController: amountController,
-            titleController: titleController,
-            cGrp: cGrp,
-            cExp: cExp,
-            context: context,
-            contactId: contactId),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(50, 10, 50, 0),
+          child: SubmitButton(
+              amountController: amountController,
+              titleController: titleController,
+              cGrp: cGrp,
+              cExp: cExp,
+              context: context,
+              contactId: contactId),
+        ),
       ],
     );
   }
@@ -332,10 +340,11 @@ class _WhoPaidListState extends State<WhoPaidList> {
       );
     }
     var cList = Container(
-      height: MediaQuery.of(context).size.height / 4,
       width: MediaQuery.of(context).size.width,
+      height: 100,
       child: ListView.builder(
         shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
         itemCount: indices.length,
         itemBuilder: (context, index) {
           String name = widget.cGrp.grpContacts[indices[index]]?.name ?? "";
@@ -352,28 +361,34 @@ class _WhoPaidListState extends State<WhoPaidList> {
             elevation: 5,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ListTile(
-                key: ValueKey(index),
-                title: Text(
-                  name,
-                  style: GoogleFonts.kreon(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+              child: Container(
+                height: 100,
+                width: MediaQuery.of(context).size.width / 2,
+                child: ListTile(
+                  key: ValueKey(index),
+                  title: Text(name, style: Globals.cardAskTextStyle),
+                  subtitle: Text(
+                    amount,
+                    style: GoogleFonts.kreon(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
                   ),
-                ),
-                subtitle: Text(
-                  amount,
-                  style: GoogleFonts.kreon(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    context.read<CNGroup>().deleteWhoPaid(indices[index]);
-                  },
+                  // trailing: IconButton(
+                  //   icon: Icon(
+                  //     Icons.delete,
+                  //     // size: Globals.appBarIconSize,
+                  //   ),
+                  //   onPressed: () {
+                  //     context.read<CNGroup>().deleteWhoPaid(indices[index]);
+                  //   },
+                  // ),
+                  trailing: GestureDetector(
+                      child: Icon(Icons.delete),
+                      onTap: () {
+                        context.read<CNGroup>().deleteWhoPaid(indices[index]);
+                      }),
                 ),
               ),
             ),
@@ -485,9 +500,10 @@ class _WhoBoughtListState extends State<WhoBoughtList> {
       );
     }
     var cList = Container(
-      height: MediaQuery.of(context).size.height / 4,
+      height: 100,
       width: MediaQuery.of(context).size.width,
       child: ListView.builder(
+        scrollDirection: Axis.horizontal,
         itemCount: indices.length,
         itemBuilder: (context, index) {
           String name = widget.cGrp.grpContacts[indices[index]]?.name ?? "";
@@ -500,28 +516,31 @@ class _WhoBoughtListState extends State<WhoBoughtList> {
             key: ValueKey(index),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            margin: EdgeInsets.all(2),
-            child: ListTile(
-              title: Text(
-                name,
-                style: GoogleFonts.kreon(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+            margin: EdgeInsets.all(5),
+            shadowColor: Theme.of(context).primaryColor,
+            elevation: 5,
+            child: Container(
+              height: MediaQuery.of(context).size.height / 5,
+              width: MediaQuery.of(context).size.width / 2,
+              child: ListTile(
+                title: Text(
+                  name,
+                  style: Globals.cardAskTextStyle,
                 ),
-              ),
-              subtitle: Text(
-                amount,
-                style: GoogleFonts.kreon(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
+                subtitle: Text(
+                  amount,
+                  style: GoogleFonts.kreon(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
                 ),
-              ),
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  context.read<CNGroup>().deleteWhoBought(indices[index]);
-                },
+                trailing: IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    context.read<CNGroup>().deleteWhoBought(indices[index]);
+                  },
+                ),
               ),
             ),
           );

@@ -28,6 +28,9 @@ class Globals {
     fontSize: 28,
     color: Colors.white,
   );
+  static TextStyle cardAskTextStyle = GoogleFonts.kreon(
+    fontSize: 16,
+  );
   static TextStyle numHeadingTextStyle = GoogleFonts.kreon(
     fontSize: 35,
     color: Colors.teal,
